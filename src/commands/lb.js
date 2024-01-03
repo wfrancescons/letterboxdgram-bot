@@ -28,18 +28,18 @@ async function lb(ctx) {
 
         const dataToFormat = {
             first_name,
-            film_name: lastFilm['letterboxd:filmTitle'],
+            film_name: lastFilm['letterboxd:filmTitle'][0],
             when: lastFilm['letterboxd:watchedDate'],
             rewatch: lastFilm['letterboxd:rewatch'][0] === 'No' ? false : true,
             rating: lastFilm['letterboxd:memberRating'] || null,
             image: posterImgUrl,
             link_review: lastFilm['link']
-
         }
 
         const message = lbModel(dataToFormat)
         const extras = {
-            entities: message.entities
+            entities: message.entities,
+            link_preview_options: message.link_preview_options
         }
 
         ctx.reply(message.text, extras)
