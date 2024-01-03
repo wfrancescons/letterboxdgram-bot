@@ -1,0 +1,52 @@
+import { getLastFilmsSeen } from '../controllers/letterboxd.js'
+import { getLetterboxdUser } from '../database/user.js'
+import errorHandler from '../handlers/errorHandler.js'
+import lbModel from './models/lbModel.js'
+
+async function lb(ctx) {
+
+    const telegram_id = ctx.message.from.id
+
+    try {
+        await ctx.replyWithChatAction('typing')
+
+        const chat_id = ctx.message.chat.id
+        let { first_name } = ctx.update.message.from
+
+        const letterboxd_user = await getLetterboxdUser(telegram_id)
+        if (!letterboxd_user) throw 'USER_NOT_FOUND'
+
+        const letterboxdData = await getLastFilmsSeen(letterboxd_user)
+
+        const lastFilm = letterboxdData.rss.channel[0].item[0]
+
+        const regex = /<img\s+src\s*=\s*["']([^"']+)["']/i;
+        const match = lastFilm.description[0].match(regex)
+
+        let posterImgUrl
+        if (match && match[1]) posterImgUrl = match[1]
+
+        const dataToFormat = {
+            first_name,
+            film_name: lastFilm['letterboxd:filmTitle'],
+            when: lastFilm['letterboxd:watchedDate'],
+            rewatch: lastFilm['letterboxd:rewatch'][0] === 'No' ? false : true,
+            rating: lastFilm['letterboxd:memberRating'] || null,
+            image: posterImgUrl,
+            link_review: lastFilm['link']
+
+        }
+
+        const message = lbModel(dataToFormat)
+        const extras = {
+            entities: message.entities
+        }
+
+        ctx.reply(message.text, extras)
+
+    } catch (error) {
+        errorHandler(ctx, error)
+    }
+}
+
+export default lb
