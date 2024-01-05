@@ -14,7 +14,7 @@ async function getLetterboxdUserInfo(username) {
             }
         }
 
-        const data = await response.text()
+        const data = response.text()
         return data
     } catch (error) {
         throw error
