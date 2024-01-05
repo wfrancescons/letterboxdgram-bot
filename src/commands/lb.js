@@ -18,7 +18,9 @@ async function lb(ctx) {
 
         const letterboxdData = await getLastFilmsSeen(letterboxd_user)
 
-        const lastFilm = letterboxdData.rss.channel[0].item[0]
+        const lastFilm = letterboxdData.rss.channel[0].item?.[0]
+
+        if (!lastFilm) throw 'ZERO_ACTIVITIES'
 
         const regex = /<img\s+src\s*=\s*["']([^"']+)["']/i;
         const match = lastFilm.description[0].match(regex)
