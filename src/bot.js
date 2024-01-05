@@ -13,6 +13,8 @@ try {
     bot.command(['lb'], (ctx) => Commands.lb(ctx))
     bot.command('reg_lb', (ctx) => Commands.reg(ctx))
 
+    bot.on('inline_query', (ctx) => Commands.inlineQuery(ctx))
+
     // Set development webhook
     if (config.environment === 'development') {
         import('node:http').then((http) => {

@@ -1,21 +1,37 @@
 export default async (ctx, error, info) => {
 
-    const extras = { reply_to_message_id: ctx.message.message_id }
+    const extras = { reply_to_message_id: ctx.message?.message_id }
+    const isInlineQuery = ctx.update?.inline_query
 
     try {
         switch (error) {
 
             case 'USER_NOT_FOUND': {
-                await ctx.replyWithMarkdown('Type `/reg letterboxdmusername` to set your Letterboxd\'s username', extras)
+
+                if (isInlineQuery) {
+                    const response = [{
+                        type: 'article',
+                        id: 1,
+                        title: '⚠️ User not found',
+                        description: 'Use /reg_lb to set your Letterboxd\'s username',
+                        input_message_content: {
+                            message_text: 'Type /reg_lb to set your Letterboxd\'s username'
+                        }
+                    }]
+
+                    await ctx.answerInlineQuery(response)
+                    break
+                }
+
+                await ctx.replyWithMarkdown('Type `/reg_lb letterboxdmusername` to set your Letterboxd\'s username', extras)
                 break
             }
 
             case 'REG_WITHOUT_ARGS': {
-                await ctx.replyWithMarkdown(
-                    'Type /reg with with your Letterboxd\'s username. \n' +
-                    'Example: `/reg letterboxdmusername` \n' +
-                    'Please, try again 🙂',
-                    extras
+                await ctx.reply(
+                    'Type /reg_lb with with your Letterboxd\'s username.\n' +
+                    'Example: /reg_lb letterboxdmusername \n' +
+                    'Please, try again 🙂', extras
                 )
                 break
             }
@@ -34,11 +50,27 @@ export default async (ctx, error, info) => {
                 break
             }
 
-            case 'COMMON_ERROR': {
-                await ctx.reply(
-                    'Something went wrong with Letterboxd 🥴 \n' +
-                    'But don\'t fret, let\'s give it another shot in a couple of minutes.\n' +
-                    'If the issue keeps happening, contact me @telelastfmsac',
+            case 'ZERO_ACTIVITIES': {
+
+                if (isInlineQuery) {
+                    const response = [{
+                        type: 'article',
+                        id: 1,
+                        title: '⚠️ No films found',
+                        description: 'There aren\'t any film in your Letterboxd. 🙁',
+                        input_message_content: {
+                            message_text: '⚠️ No films found'
+                        }
+                    }]
+
+                    await ctx.answerInlineQuery(response)
+                    break
+                }
+
+                await ctx.replyWithMarkdown(
+                    'There aren\'t any film in your Letterboxd. 🙁\n' +
+                    'Is your username correct? 🤔\n' +
+                    'Type `/reg_lb letterboxdmusername` to set your Letterboxd\'s username',
                     extras
                 )
                 break

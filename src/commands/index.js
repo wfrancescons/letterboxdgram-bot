@@ -1,3 +1,4 @@
+import inlineQuery from './inlineQuery.js'
 import lb from './lb.js'
 import reg from './reg.js'
 
@@ -40,6 +41,7 @@ async function help(ctx) {
 }
 
 export {
-    help, lb, reg,
+    help, inlineQuery, lb, reg,
     start
 }
+
