@@ -14,42 +14,57 @@ async function inlineQuery(ctx) {
         if (!letterboxd_user) throw 'USER_NOT_FOUND'
 
         const letterboxdData = await getLastFilmsSeen(letterboxd_user)
-        const lastFilm = letterboxdData.rss.channel[0].item?.[0]
-        if (!lastFilm) throw 'ZERO_ACTIVITIES'
+        const letterboxdFilms = letterboxdData.rss.channel[0]?.item || []
+        if (!letterboxdFilms.length) throw 'ZERO_ACTIVITIES'
 
-        const regex = /<img\s+src\s*=\s*["']([^"']+)["']/i;
-        const match = lastFilm.description[0].match(regex)
+        const maxResults = Math.min(letterboxdFilms.length, 10)
 
-        let posterImgUrl
-        if (match && match[1]) posterImgUrl = match[1]
+        const lastFilms = letterboxdFilms.slice(0, maxResults)
 
-        const dataToFormat = {
-            first_name,
-            film_name: lastFilm['letterboxd:filmTitle'][0],
-            when: lastFilm['letterboxd:watchedDate'],
-            rewatch: lastFilm['letterboxd:rewatch'][0] === 'No' ? false : true,
-            rating: lastFilm['letterboxd:memberRating'] || null,
-            image: posterImgUrl,
-            link_review: lastFilm['link']
-        }
+        const films = lastFilms.reduce((sum, current) => {
 
-        const message = lbModel(dataToFormat)
+            const regex = /<img\s+src\s*=\s*["']([^"']+)["']/i;
+            const match = current.description[0].match(regex)
 
-        const results = [
-            {
-                type: 'article',
-                id: 1,
-                title: '📽️ Film:',
+            let posterImgUrl = 'https://a.ltrbxd.com/logos/letterboxd-logo-alt-v-neg-rgb-1000px.png'
+            if (match && match[1]) posterImgUrl = match[1]
+
+            const dataToFormat = {
+                first_name,
+                film_name: current['letterboxd:filmTitle'][0],
+                when: current['letterboxd:watchedDate'],
+                rewatch: current['letterboxd:rewatch'][0] === 'No' ? false : true,
+                rating: current['letterboxd:memberRating'] || null,
+                image: posterImgUrl,
+                link_review: current['link']
+            }
+
+            const formatedMessage = lbModel(dataToFormat)
+
+            sum.content.push({
+                type: 'photo',
+                id: sum.id,
+                photo_url: dataToFormat.image,
+                thumbnail_url: dataToFormat.image,
+                title: dataToFormat.film_name,
                 description: dataToFormat.film_name,
                 thumb_url: dataToFormat.image,
+                caption: dataToFormat.film_name,
                 input_message_content: {
-                    message_text: message.text,
-                    entities: message.entities
+                    message_text: formatedMessage.text,
+                    entities: formatedMessage.entities
                 }
-            }
-        ]
+            })
 
-        await ctx.answerInlineQuery(results, { is_personal: true, cache_time: 5 })
+            sum.id++
+
+            return sum
+        }, { id: 1, content: [] })
+
+        const results = []
+        films.content.map(x => results.push(x))
+
+        await ctx.answerInlineQuery(results, { is_personal: true, cache_time: 1 })
 
     } catch (error) {
         errorHandler(ctx, error)

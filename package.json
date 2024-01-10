@@ -1,6 +1,6 @@
 {
   "name": "letterboxdgram-bot",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Let your friends on Telegram know what you've been watching and spark conversations about the latest releases.",
   "main": "./src/bot.js",
   "type": "module",
@@ -8,7 +8,8 @@
     "node": "20.x"
   },
   "scripts": {
-    "start": "node ./src/bot.js"
+    "start": "node ./src/bot.js",
+    "dev": "node --env-file=.env --watch ./src/bot.js"
   },
   "keywords": [
     "telegram",
