@@ -3,7 +3,7 @@ import { parseStringPromise } from 'xml2js'
 async function getLetterboxdUserInfo(username) {
     try {
         const response = await fetch(`https://letterboxd.com/${username}/rss/`, {
-            signal: AbortSignal.timeout(10000)
+            signal: AbortSignal.timeout(5000)
         })
 
         if (!response.ok) {
