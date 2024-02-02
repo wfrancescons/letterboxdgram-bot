@@ -5,7 +5,7 @@
   "main": "./src/bot.js",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": ">=20.11.0"
   },
   "scripts": {
     "start": "node ./src/bot.js",
