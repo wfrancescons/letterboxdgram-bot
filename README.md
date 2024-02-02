@@ -25,5 +25,5 @@ Explore the following commands to interact with the bot:
 
 ## Additional Information
 
-- [Telegram channel](https://t.me/letterboxdgramnews) for updates and announcements about the bot.
+- [Telegram channel](https://t.me/telelastfmnews) for updates and announcements about the bot.
 - Join the conversation and discuss movies with other users on our [Telegram group](https://t.me/letterboxdgramflood).
