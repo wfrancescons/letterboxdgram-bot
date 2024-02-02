@@ -13,13 +13,15 @@ const User = sequelize.define('user', {
     },
 }, { timestamps: true })
 
-await sequelize.sync()
-console.log('DB: Tabela "users" sincronizada')
+try {
+    await sequelize.sync()
+    console.log('DB: Tabela "users" sincronizada')
 
-User.count().then((count) => {
-    console.log(`DB: Total de registros na tabela "users": ${count}`);
-}).catch((err) => {
-    console.error('DB: Erro ao contar registros:', err);
-})
+    const userCount = await User.count()
+    console.log(`DB: Total de registros na tabela "users": ${userCount}`)
+
+} catch (error) {
+    console.error('DB: Erro ao sincronizar tabelas ou contar registros:', error)
+}
 
 export default User
