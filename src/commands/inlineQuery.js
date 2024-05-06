@@ -13,13 +13,8 @@ async function inlineQuery(ctx) {
         const letterboxd_user = await getLetterboxdUser(telegram_id)
         if (!letterboxd_user) throw 'USER_NOT_FOUND'
 
-        const letterboxdData = await getLastFilmsSeen(letterboxd_user)
-        const letterboxdFilms = letterboxdData.rss.channel[0]?.item || []
-        if (!letterboxdFilms.length) throw 'ZERO_ACTIVITIES'
-
-        const maxResults = Math.min(letterboxdFilms.length, 10)
-
-        const lastFilms = letterboxdFilms.slice(0, maxResults)
+        const lastFilms = await getLastFilmsSeen(letterboxd_user, 10)
+        if (!lastFilms.length) throw 'ZERO_ACTIVITIES'
 
         const films = lastFilms.reduce((sum, current) => {
 

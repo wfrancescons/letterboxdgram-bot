@@ -23,7 +23,7 @@ async function lb(ctx) {
         const regex = /<img\s+src\s*=\s*["']([^"']+)["']/i;
         const match = lastFilm.description[0].match(regex)
 
-        let posterImgUrl = 'https://s.ltrbxd.com/static/img/empty-poster-230.876e6b8e.png'
+        let posterImgUrl = 'https://a.ltrbxd.com/logos/letterboxd-logo-alt-v-neg-rgb-1000px.png'
         if (match && match[1]) posterImgUrl = match[1]
 
         const dataToFormat = {
