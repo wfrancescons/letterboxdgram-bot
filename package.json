@@ -8,7 +8,7 @@
     "node": ">=20.11.0"
   },
   "scripts": {
-    "start": "node ./src/bot.js",
+    "start": "node --env-file=.env ./src/bot.js",
     "dev": "node --watch --env-file=.env ./src/bot.js"
   },
   "keywords": [
