@@ -16,16 +16,14 @@ async function lb(ctx) {
         const letterboxd_user = await getLetterboxdUser(telegram_id)
         if (!letterboxd_user) throw 'USER_NOT_FOUND'
 
-        const letterboxdData = await getLastFilmsSeen(letterboxd_user)
-
-        const lastFilm = letterboxdData.rss.channel[0].item?.[0]
+        const [lastFilm] = await getLastFilmsSeen(letterboxd_user, 1)
 
         if (!lastFilm) throw 'ZERO_ACTIVITIES'
 
         const regex = /<img\s+src\s*=\s*["']([^"']+)["']/i;
         const match = lastFilm.description[0].match(regex)
 
-        let posterImgUrl
+        let posterImgUrl = 'https://s.ltrbxd.com/static/img/empty-poster-230.876e6b8e.png'
         if (match && match[1]) posterImgUrl = match[1]
 
         const dataToFormat = {

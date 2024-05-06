@@ -12,6 +12,7 @@ try {
 
     bot.command(['lb'], (ctx) => Commands.lb(ctx))
     bot.command('reg_lb', (ctx) => Commands.reg(ctx))
+    bot.command('about', (ctx) => Commands.about(ctx))
 
     bot.on('inline_query', (ctx) => Commands.inlineQuery(ctx))
 

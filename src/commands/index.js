@@ -1,3 +1,4 @@
+import about from './about.js'
 import inlineQuery from './inlineQuery.js'
 import lb from './lb.js'
 import reg from './reg.js'
@@ -32,7 +33,8 @@ async function help(ctx) {
         await ctx.replyWithMarkdown(
             `Valid commands: 🤖\n` +
             `\n/lb - See your last watched movie` +
-            `\n\`/reg_lb letterboxduser\` - Set your Letterboxd's username`
+            `\n\`/reg_lb letterboxduser\` - Set your Letterboxd's username` +
+            `\n\`/about\` - See stats from your Letterboxd`
         )
 
     } catch (error) {
@@ -41,7 +43,7 @@ async function help(ctx) {
 }
 
 export {
-    help, inlineQuery, lb, reg,
+    about, help, inlineQuery, lb, reg,
     start
 }
 
