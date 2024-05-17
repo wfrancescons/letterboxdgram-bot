@@ -13,11 +13,10 @@ function aboutModel(data) {
         `\n\n📽️ Watched Films: ${watchedFilms.toLocaleString('pt-BR')}`,
         `\n📅 This Year: ${watchedFilmsThisYear.toLocaleString('pt-BR')}`
     ]
-    console.log(lastFilms)
 
     if (lastFilms.length) {
         text.push(`\n\n⏰ Recent Activity:`)
-        lastFilms.map(title => text.push(`\n ${title}`))
+        lastFilms.map(title => text.push(`\n${title}`))
     }
 
     const entities = [
