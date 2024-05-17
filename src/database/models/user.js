@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 import sequelize from '../connect.js'
 
-const User = sequelize.define('user', {
+const User = sequelize.define('User', {
     telegram_id: {
         type: DataTypes.BIGINT,
         allowNull: false,
