@@ -1,12 +1,16 @@
 import { Sequelize } from 'sequelize'
 import config from '../config.js'
 
-const { username, password, database, host, dialect } = config.sequelize
+const { host, port, database, username, password, dialect } = config.sequelize
 
-const sequelize = new Sequelize(database, username, password, {
+const sequelize = new Sequelize({
     host,
+    port,
+    database,
+    username,
+    password,
     dialect,
-    logging: false
+    logging: config.environment === 'development'
 })
 
 export default sequelize
