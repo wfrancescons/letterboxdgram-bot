@@ -1,12 +1,17 @@
+import { logCommand } from '../database/commandUsageLogs.js'
 import about from './about.js'
 import inlineQuery from './inlineQuery.js'
 import lb from './lb.js'
-import reg from './reg.js'
+import reg_lb from './reg_lb.js'
 
 // Start command
 async function start(ctx) {
 
-    const { first_name } = ctx.update.message.from
+    const telegram_id = ctx.message.from.id
+    const chat_id = ctx.message.chat.id
+    const first_name = ctx.update.message.from.first_name
+
+    logCommand('start', telegram_id, chat_id)
 
     try {
 
@@ -27,6 +32,12 @@ async function start(ctx) {
 
 // Help command
 async function help(ctx) {
+
+    const telegram_id = ctx.message.from.id
+    const chat_id = ctx.message.chat.id
+
+    logCommand('help', telegram_id, chat_id)
+
     try {
         await ctx.replyWithChatAction('typing')
 
@@ -43,7 +54,6 @@ async function help(ctx) {
 }
 
 export {
-    about, help, inlineQuery, lb, reg,
+    about, help, inlineQuery, lb, reg_lb,
     start
 }
-

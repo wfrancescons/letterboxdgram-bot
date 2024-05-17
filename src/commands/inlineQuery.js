@@ -1,12 +1,17 @@
 import { getLastFilmsSeen } from '../controllers/letterboxd.js'
+import { logCommand } from '../database/commandUsageLogs.js'
 import { getLetterboxdUser } from '../database/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 import lbModel from './models/lbModel.js'
 
 async function inlineQuery(ctx) {
 
+    console.log(ctx.update)
     const telegram_id = ctx.update.inline_query.from.id
+    const chat_id = ctx.update.inline_query.from.id
     const first_name = ctx.update.inline_query.from.first_name
+
+    logCommand('inline_query', telegram_id, chat_id)
 
     try {
 

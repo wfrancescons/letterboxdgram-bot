@@ -1,4 +1,5 @@
 import { getLetterboxdUserStats } from '../controllers/letterboxd.js'
+import { logCommand } from '../database/commandUsageLogs.js'
 import { getLetterboxdUser } from '../database/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 import aboutModel from './models/aboutModel.js'
@@ -6,12 +7,13 @@ import aboutModel from './models/aboutModel.js'
 async function about(ctx) {
 
     const telegram_id = ctx.message.from.id
+    const chat_id = ctx.message.chat.id
+    const first_name = ctx.update.message.from.first_name
+
+    logCommand('about', telegram_id, chat_id)
 
     try {
         await ctx.replyWithChatAction('typing')
-
-        const chat_id = ctx.message.chat.id
-        let { first_name } = ctx.update.message.from
 
         const letterboxd_user = await getLetterboxdUser(telegram_id)
         if (!letterboxd_user) throw 'USER_NOT_FOUND'

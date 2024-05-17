@@ -1,15 +1,15 @@
 {
   "name": "letterboxdgram-bot",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Let your friends on Telegram know what you've been watching and spark conversations about the latest releases.",
   "main": "./src/bot.js",
   "type": "module",
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=20"
   },
   "scripts": {
     "start": "node --env-file=.env ./src/bot.js",
-    "dev": "node --watch --env-file=.env ./src/bot.js"
+    "dev": "node --env-file=.env --watch ./src/bot.js"
   },
   "keywords": [
     "telegram",
@@ -21,6 +21,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "mysql2": "^3.6.5",
+    "oracledb": "^6.5.0",
     "sequelize": "^6.35.2",
     "telegraf": "^4.15.3",
     "xml2js": "^0.6.2"

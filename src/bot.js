@@ -1,17 +1,24 @@
 import { Telegraf } from 'telegraf'
 import config from './config.js'
+import database from './database/connect.js'
 
 import * as Commands from './commands/index.js'
 
 const bot = new Telegraf(config.bot_token)
 
 try {
+    console.log('BOT: Starting components')
+
+    // Try to connect to database
+    await database.authenticate()
+    console.log('DATABASE: Connection successful')
+
     // Set bot response
     bot.start((ctx) => Commands.start(ctx))
     bot.help((ctx) => Commands.help(ctx))
 
     bot.command(['lb'], (ctx) => Commands.lb(ctx))
-    bot.command('reg_lb', (ctx) => Commands.reg(ctx))
+    bot.command('reg_lb', (ctx) => Commands.reg_lb(ctx))
     bot.command('about', (ctx) => Commands.about(ctx))
 
     bot.on('inline_query', (ctx) => Commands.inlineQuery(ctx))
@@ -27,7 +34,7 @@ try {
 
     console.log(`BOT: Running in ${config.environment} environment`)
 } catch (error) {
-    console.error('BOT: Erro ao iniciar', error)
+    console.error('BOT: Erro ao iniciar - ', error)
 }
 
 process.once('SIGINT', () => bot.stop('SIGINT'))
