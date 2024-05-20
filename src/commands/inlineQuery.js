@@ -6,7 +6,6 @@ import lbModel from './models/lbModel.js'
 
 async function inlineQuery(ctx) {
 
-    console.log(ctx.update)
     const telegram_id = ctx.update.inline_query.from.id
     const chat_id = ctx.update.inline_query.from.id
     const first_name = ctx.update.inline_query.from.first_name
