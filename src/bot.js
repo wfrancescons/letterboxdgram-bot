@@ -1,17 +1,16 @@
 import { Telegraf } from 'telegraf'
 import config from './config.js'
-import database from './database/connect.js'
+import sequelize from './database/index.js'
 
 import * as Commands from './commands/index.js'
 
 const bot = new Telegraf(config.bot_token)
 
 try {
-    console.log('BOT: Starting components')
+    console.log('BOT: starting components')
 
     // Try to connect to database
-    await database.authenticate()
-    console.log('DATABASE: Connection successful')
+    await sequelize.authenticate()
 
     // Set bot response
     bot.start((ctx) => Commands.start(ctx))
@@ -32,9 +31,9 @@ try {
 
     bot.launch()
 
-    console.log(`BOT: Running in ${config.environment} environment`)
+    console.log(`BOT: running in ${config.environment} environment`)
 } catch (error) {
-    console.error('BOT: Erro ao iniciar - ', error)
+    console.error('BOT: error when starting - ', error)
 }
 
 process.once('SIGINT', () => bot.stop('SIGINT'))

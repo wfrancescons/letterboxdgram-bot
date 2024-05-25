@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node --env-file=.env ./src/bot.js",
-    "dev": "node --env-file=.env --watch ./src/bot.js"
+    "dev": "node --env-file=.env --watch --watch-path=src ./src/bot.js"
   },
   "keywords": [
     "telegram",

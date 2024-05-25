@@ -1,4 +1,4 @@
-import { logCommand } from '../database/commandUsageLogs.js'
+import { logCommand } from '../database/services/CommandUsageLogService.js'
 import about from './about.js'
 import inlineQuery from './inlineQuery.js'
 import lb from './lb.js'
@@ -57,3 +57,4 @@ export {
     about, help, inlineQuery, lb, reg_lb,
     start
 }
+

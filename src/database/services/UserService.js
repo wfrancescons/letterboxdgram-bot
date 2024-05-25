@@ -1,5 +1,5 @@
-import { getLetterboxdUserInfo } from '../controllers/letterboxd.js'
-import User from './models/user.js'
+import { getLetterboxdUserInfo } from '../../controllers/letterboxd.js'
+import { User } from '../index.js'
 
 async function createUser(telegram_id, letterboxd_username) {
     try {

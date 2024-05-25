@@ -1,5 +1,5 @@
-import { logCommand } from '../database/commandUsageLogs.js'
-import { setLetterboxdUsername } from '../database/user.js'
+import { logCommand } from '../database/services/CommandUsageLogService.js'
+import { setLetterboxdUsername } from '../database/services/UserService.js'
 import errorHandler from '../handlers/errorHandler.js'
 
 async function reg_lb(ctx) {

@@ -1,6 +1,6 @@
 import { getLetterboxdUserStats } from '../controllers/letterboxd.js'
-import { logCommand } from '../database/commandUsageLogs.js'
-import { getLetterboxdUser } from '../database/user.js'
+import { logCommand } from '../database/services/CommandUsageLogService.js'
+import { getLetterboxdUser } from '../database/services/UserService.js'
 import errorHandler from '../handlers/errorHandler.js'
 import aboutModel from './models/aboutModel.js'
 

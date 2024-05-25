@@ -1,4 +1,4 @@
-import CommandUsageLogs from './models/commandUsageLogs.js'
+import { CommandUsageLogs } from '../index.js'
 
 async function logCommand(command, telegram_id, chat_id) {
     try {
