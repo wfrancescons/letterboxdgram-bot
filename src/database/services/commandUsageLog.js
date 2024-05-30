@@ -1,4 +1,6 @@
-import { CommandUsageLogs } from '../index.js'
+import { Models } from '../database.js'
+
+const { CommandUsageLogs } = Models
 
 async function logCommand(command, telegram_id, chat_id) {
     try {
@@ -9,3 +11,4 @@ async function logCommand(command, telegram_id, chat_id) {
 }
 
 export { logCommand }
+

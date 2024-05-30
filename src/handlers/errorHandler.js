@@ -13,9 +13,9 @@ export default async (ctx, error, info) => {
                         type: 'article',
                         id: 1,
                         title: '⚠️ User not found',
-                        description: 'Use /reg_lb to set your Letterboxd\'s username',
+                        description: 'Use /reg to set your Letterboxd\'s username',
                         input_message_content: {
-                            message_text: 'Type /reg_lb to set your Letterboxd\'s username'
+                            message_text: 'Type /reg to set your Letterboxd\'s username'
                         }
                     }]
 
@@ -23,14 +23,14 @@ export default async (ctx, error, info) => {
                     break
                 }
 
-                await ctx.replyWithMarkdown('Type `/reg_lb letterboxdmusername` to set your Letterboxd\'s username', extras)
+                await ctx.replyWithMarkdown('Type `/reg letterboxdmusername` to set your Letterboxd\'s username', extras)
                 break
             }
 
             case 'REG_WITHOUT_ARGS': {
                 await ctx.reply(
-                    'Type /reg_lb with with your Letterboxd\'s username.\n' +
-                    'Example: /reg_lb letterboxdmusername \n' +
+                    'Type /reg with with your Letterboxd\'s username.\n' +
+                    'Example: /reg letterboxdmusername \n' +
                     'Please, try again 🙂', extras
                 )
                 break
@@ -70,7 +70,7 @@ export default async (ctx, error, info) => {
                 await ctx.replyWithMarkdown(
                     'There aren\'t any film in your Letterboxd. 🙁\n' +
                     'Is your username correct? 🤔\n' +
-                    'Type `/reg_lb letterboxdmusername` to set your Letterboxd\'s username',
+                    'Type `/reg letterboxdmusername` to set your Letterboxd\'s username',
                     extras
                 )
                 break

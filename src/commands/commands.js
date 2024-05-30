@@ -1,8 +1,8 @@
-import { logCommand } from '../database/services/CommandUsageLogService.js'
+import { logCommand } from '../database/services/commandUsageLog.js'
 import about from './about.js'
 import inlineQuery from './inlineQuery.js'
 import lb from './lb.js'
-import reg_lb from './reg_lb.js'
+import reg from './reg.js'
 
 // Start command
 async function start(ctx) {
@@ -20,7 +20,7 @@ async function start(ctx) {
         await ctx.reply(
             `Hello, ${first_name} 👋\n` +
             `\nWelcome to the letterboxd bot 🤖🎵\n` +
-            `\nUse /reg_lb to set your Letterboxd's username\n` +
+            `\nUse /reg to set your Letterboxd's username\n` +
             `\nType / or /help to see a list of valid commands\n` +
             `\nAccess @telelastfmnews for server status and news 📰`
         )
@@ -44,8 +44,8 @@ async function help(ctx) {
         await ctx.replyWithMarkdown(
             `Valid commands: 🤖\n` +
             `\n/lb - See your last watched movie` +
-            `\n\`/reg_lb letterboxduser\` - Set your Letterboxd's username` +
-            `\n\`/about\` - See stats from your Letterboxd`
+            `\n\`/reg letterboxduser\` - Set your Letterboxd's username` +
+            `\n/about - See stats from your Letterboxd`
         )
 
     } catch (error) {
@@ -54,7 +54,6 @@ async function help(ctx) {
 }
 
 export {
-    about, help, inlineQuery, lb, reg_lb,
+    about, help, inlineQuery, lb, reg,
     start
 }
-

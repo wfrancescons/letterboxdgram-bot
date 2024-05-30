@@ -1,8 +1,8 @@
 import { Telegraf } from 'telegraf'
 import config from './config.js'
-import sequelize from './database/index.js'
+import sequelize from './database/database.js'
 
-import * as Commands from './commands/index.js'
+import * as Commands from './commands/commands.js'
 
 const bot = new Telegraf(config.bot_token)
 
@@ -16,8 +16,8 @@ try {
     bot.start((ctx) => Commands.start(ctx))
     bot.help((ctx) => Commands.help(ctx))
 
-    bot.command(['lb'], (ctx) => Commands.lb(ctx))
-    bot.command('reg_lb', (ctx) => Commands.reg_lb(ctx))
+    bot.command('lb', (ctx) => Commands.lb(ctx))
+    bot.command('reg', (ctx) => Commands.reg(ctx))
     bot.command('about', (ctx) => Commands.about(ctx))
 
     bot.on('inline_query', (ctx) => Commands.inlineQuery(ctx))

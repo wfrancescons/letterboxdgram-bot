@@ -1,15 +1,15 @@
-import { logCommand } from '../database/services/CommandUsageLogService.js'
-import { setLetterboxdUsername } from '../database/services/UserService.js'
+import { logCommand } from '../database/services/commandUsageLog.js'
+import { setLetterboxdUsername } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 
-async function reg_lb(ctx) {
+async function reg(ctx) {
 
     const telegram_id = ctx.message.from.id
     const chat_id = ctx.message.chat.id
     const text = ctx.update.message.text.split(' ')
     const [command, letterboxd_user] = text
 
-    logCommand('reg_lb', telegram_id, chat_id)
+    logCommand('reg', telegram_id, chat_id)
 
     try {
         await ctx.replyWithChatAction('typing')
@@ -36,4 +36,4 @@ async function reg_lb(ctx) {
     }
 }
 
-export default reg_lb
+export default reg

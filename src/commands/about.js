@@ -1,8 +1,8 @@
-import { getLetterboxdUserStats } from '../controllers/letterboxd.js'
-import { logCommand } from '../database/services/CommandUsageLogService.js'
-import { getLetterboxdUser } from '../database/services/UserService.js'
+import { logCommand } from '../database/services/commandUsageLog.js'
+import { getLetterboxdUser } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
-import aboutModel from './models/aboutModel.js'
+import { getLetterboxdUserStats } from '../services/letterboxd.js'
+import aboutModel from './formatters/aboutModel.js'
 
 async function about(ctx) {
 

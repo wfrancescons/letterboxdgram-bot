@@ -1,5 +1,7 @@
-import { getLetterboxdUserInfo } from '../../controllers/letterboxd.js'
-import { User } from '../index.js'
+import { getLetterboxdUserXml } from '../../services/letterboxd.js'
+import { Models } from '../database.js'
+
+const { User } = Models
 
 async function createUser(telegram_id, letterboxd_username) {
     try {
@@ -41,7 +43,7 @@ async function getLetterboxdUser(telegram_id) {
 
 async function setLetterboxdUsername(telegram_id, letterboxd_username) {
     try {
-        const userInfo = await getLetterboxdUserInfo(letterboxd_username)
+        const userInfo = await getLetterboxdUserXml(letterboxd_username)
         const user = await getUser(telegram_id)
 
         if (!user && userInfo) {
