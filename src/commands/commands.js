@@ -1,5 +1,6 @@
 import { logCommand } from '../database/services/commandUsageLog.js'
 import about from './about.js'
+import collage from './collage.js'
 import inlineQuery from './inlineQuery.js'
 import lb from './lb.js'
 import reg from './reg.js'
@@ -54,6 +55,7 @@ async function help(ctx) {
 }
 
 export {
-    about, help, inlineQuery, lb, reg,
+    about, collage, help, inlineQuery, lb, reg,
     start
 }
+
