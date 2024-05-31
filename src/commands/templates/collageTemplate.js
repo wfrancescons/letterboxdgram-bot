@@ -1,4 +1,6 @@
-import { createCanvas, loadImage } from 'canvas'
+import { createCanvas, loadImage, registerFont } from 'canvas'
+
+registerFont('./src/commands/templates/NotoSans.ttf', { family: 'Noto Sans' })
 
 const POSTER_WIDTH = 270
 const POSTER_HEIGHT = 405
@@ -28,7 +30,7 @@ async function generatePoster(ctx, item, index, COLUMNS, param) {
         // Desenhar o texto da classificação
         ctx.fillStyle = '#fff'
         ctx.textAlign = 'center'
-        ctx.font = '30px "Arial", sans-serif'
+        ctx.font = '30px "Noto Sans", sans-serif'
         ctx.fillText(item.rating.text, x + POSTER_WIDTH / 2, y + POSTER_HEIGHT - 20)
     }
 
