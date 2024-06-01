@@ -9,11 +9,11 @@ export default async (ctx, error, info) => {
             case 'COLLAGE_INCORRECT_ARGS': {
                 await ctx.replyWithMarkdown(
                     'Invalid argumments 🤔\n\n' +
-                    '✅ Type a columns x rows value greater than 2 and up to 4\n' +
+                    '✅ Type a columns x rows value greater than 0 and up to 4\n' +
                     '\n➡️ Examples:\n' +
                     '`/collage 3x3`\n' +
-                    '`/collage 4x2`\n' +
-                    '`/collage 4x4 norating`',
+                    '`/collage 4x1`\n' +
+                    '`/collage 4x4 notext`',
                     extras
                 )
                 break

@@ -46,7 +46,8 @@ async function help(ctx) {
             `Valid commands: 🤖\n` +
             `\n/lb - See your last watched movie` +
             `\n\`/reg letterboxduser\` - Set your Letterboxd's username` +
-            `\n/about - See stats from your Letterboxd`
+            `\n/about - See stats from your Letterboxd` +
+            `\n/collage - Generate a grid collage`
         )
 
     } catch (error) {

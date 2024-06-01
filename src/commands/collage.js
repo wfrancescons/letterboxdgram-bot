@@ -14,14 +14,14 @@ async function collage(ctx) {
     logCommand('collage', telegram_id, chat_id)
 
     try {
-        await ctx.replyWithChatAction('upload_photo')
+        await ctx.replyWithChatAction('typing')
 
         const letterboxd_user = await getLetterboxdUser(telegram_id)
         if (!letterboxd_user) throw 'USER_NOT_FOUND'
 
         const grid_regex = /^(\d+)x(\d+)$/
         let grid = args.find(arg => arg.match(grid_regex))
-        let param = args.find(arg => arg === 'norating')
+        let param = args.find(arg => arg === 'notext')
 
         if (!grid) grid = '4x3'
 
@@ -32,12 +32,22 @@ async function collage(ctx) {
         const COLUMNS = Number(regex_result[1])
         const ROWS = Number(regex_result[2])
 
-        if ((COLUMNS > 4 || COLUMNS < 2) || (ROWS > 4 || ROWS < 2)) return errorHandler(ctx, 'COLLAGE_INCORRECT_ARGS')
+        if ((COLUMNS > 4 || COLUMNS < 1) || (ROWS > 4 || ROWS < 1)) return errorHandler(ctx, 'COLLAGE_INCORRECT_ARGS')
+
+        const response = await ctx.reply(
+            'Generating your collage 🟠🟢🔵\n' +
+            'It may take a while...'
+        )
+
+        await ctx.replyWithChatAction('upload_photo')
 
         const lastFilms = await getLastFilmsSeen(letterboxd_user, COLUMNS * ROWS)
-        const image = await generateGrid(lastFilms, COLUMNS, ROWS, param)
 
-        ctx.replyWithPhoto({ source: image }, { caption: `${first_name}, your ${grid} collage` })
+        generateGrid(lastFilms, COLUMNS, ROWS, param)
+            .then(image => {
+                ctx.replyWithPhoto({ source: image }, { caption: `${first_name}, your ${grid} collage` })
+                    .finally(() => ctx.deleteMessage(response.message_id))
+            })
 
     } catch (error) {
         errorHandler(ctx, error)
