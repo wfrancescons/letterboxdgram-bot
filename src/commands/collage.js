@@ -1,8 +1,9 @@
 import { logCommand } from '../database/services/commandUsageLog.js'
 import { getLetterboxdUser } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
+import renderCanvas from '../rendering/renderCanva.js'
 import { getLastFilmsSeen } from '../services/letterboxd.js'
-import generateGrid from './templates/collageTemplate.js'
+import prepareData from './templates/collageTemplate.js'
 
 async function collage(ctx) {
 
@@ -36,18 +37,22 @@ async function collage(ctx) {
 
         const response = await ctx.reply(
             'Generating your collage 🟠🟢🔵\n' +
-            'It may take a while...'
+            'It may take a while...', { reply_to_message_id: ctx.message?.message_id }
         )
 
         await ctx.replyWithChatAction('upload_photo')
 
         const lastFilms = await getLastFilmsSeen(letterboxd_user, COLUMNS * ROWS)
 
-        generateGrid(lastFilms, COLUMNS, ROWS, param)
-            .then(image => {
-                ctx.replyWithPhoto({ source: image }, { caption: `${first_name}, your ${grid} collage` })
-                    .finally(() => ctx.deleteMessage(response.message_id))
-            })
+        const template = prepareData(lastFilms, COLUMNS, ROWS, param)
+
+        renderCanvas(template).then(canva => {
+            ctx.replyWithPhoto({ source: canva }, { caption: `${first_name}, your ${grid} collage`, reply_to_message_id: ctx.message?.message_id })
+                .then(() => ctx.deleteMessage(response.message_id))
+                .catch(error => {
+                    throw error
+                })
+        })
 
     } catch (error) {
         errorHandler(ctx, error)

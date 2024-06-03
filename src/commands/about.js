@@ -35,7 +35,8 @@ async function about(ctx) {
         const message = aboutModel(dataToFormat)
         const extras = {
             entities: message.entities,
-            link_preview_options: message.link_preview_options
+            link_preview_options: message.link_preview_options,
+            reply_to_message_id: ctx.message?.message_id
         }
 
         ctx.reply(message.text, extras)

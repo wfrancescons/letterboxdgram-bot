@@ -29,7 +29,8 @@ async function lb(ctx) {
         const extras = {
             entities: message.entities,
             link_preview_options: message.link_preview_options,
-            reply_markup: message.reply_markup
+            reply_markup: message.reply_markup,
+            reply_to_message_id: ctx.message?.message_id
         }
 
         ctx.reply(message.text, extras)

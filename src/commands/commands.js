@@ -23,7 +23,8 @@ async function start(ctx) {
             `\nWelcome to the letterboxd bot 🤖🎵\n` +
             `\nUse /reg to set your Letterboxd's username\n` +
             `\nType / or /help to see a list of valid commands\n` +
-            `\nAccess @telelastfmnews for server status and news 📰`
+            `\nAccess @telelastfmnews for server status and news 📰`,
+            { reply_to_message_id: ctx.message?.message_id }
         )
 
     } catch (error) {
