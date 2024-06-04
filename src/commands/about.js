@@ -3,7 +3,7 @@ import { getLetterboxdUser } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 import { getLetterboxdUserStats } from '../services/letterboxd.js'
 import { sendTextMessage } from '../utils/messageSender.js'
-import aboutModel from './formatters/aboutModel.js'
+import aboutFormatter from './formatters/aboutFormatter.js'
 
 async function about(ctx) {
 
@@ -33,7 +33,7 @@ async function about(ctx) {
             lastFilms
         }
 
-        const message = aboutModel(dataToFormat)
+        const message = aboutFormatter(dataToFormat)
         const extras = {
             entities: message.entities,
             link_preview_options: message.link_preview_options,

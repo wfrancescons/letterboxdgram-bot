@@ -1,4 +1,4 @@
-function aboutModel(data) {
+function aboutFormatter(data) {
 
     const {
         first_name,
@@ -50,4 +50,4 @@ function aboutModel(data) {
 
 }
 
-export default aboutModel
+export default aboutFormatter
