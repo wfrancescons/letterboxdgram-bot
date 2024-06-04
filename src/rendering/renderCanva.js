@@ -1,8 +1,30 @@
 import { createCanvas, loadImage, registerFont } from 'canvas'
 
-registerFont('./src/commands/templates/assets/NotoSans.ttf', { family: 'Noto Sans Bold' })
+registerFont('./src/rendering/fonts/NotoSans-Symble.ttf', { family: 'Noto Sans Symble' })
+registerFont('./src/rendering/fonts/NotoSans-Bold.ttf', { family: 'Noto Sans Bold' })
+
+// Função auxiliar para quebrar texto em várias linhas
+function wrapText(ctx, text, maxWidth) {
+    const words = text.split(' ')
+    let lines = []
+    let currentLine = words[0]
+
+    for (let i = 1; i < words.length; i++) {
+        const word = words[i]
+        const width = ctx.measureText(currentLine + ' ' + word).width
+        if (width < maxWidth) {
+            currentLine += ' ' + word
+        } else {
+            lines.push(currentLine)
+            currentLine = word
+        }
+    }
+    lines.push(currentLine)
+    return lines
+}
 
 async function drawImage(ctx, element) {
+
     try {
         const image = await loadImage(element.src)
         ctx.drawImage(image, element.x, element.y, element.width, element.height)
@@ -47,7 +69,10 @@ function drawText(ctx, element) {
         ctx.shadowBlur = element.shadow.blur
     }
 
-    ctx.fillText(element.text, element.x, element.y)
+    const lines = wrapText(ctx, element.text, element.maxWidth)
+    lines.forEach((line, i) => {
+        ctx.fillText(line, element.x, element.y - (lines.length - 1 - i) * element.lineHeight)
+    })
 }
 
 async function renderCanvas(data) {
@@ -60,15 +85,21 @@ async function renderCanvas(data) {
     if (data.type === 'collage') {
         const imageElements = []
         const rectangleElements = []
+        const iconElements = []
         const textElements = []
 
         for (const element of data.elements) {
             if (element.type === 'image') {
                 imageElements.push(element)
-            } else if (element.type === 'rectangle') {
+            }
+            if (element.type === 'rectangle') {
                 rectangleElements.push(element)
-            } else if (element.type === 'text') {
+            }
+            if (element.type === 'text') {
                 textElements.push(element)
+            }
+            if (element.type === 'icon') {
+                iconElements.push(element)
             }
         }
 
@@ -78,6 +109,10 @@ async function renderCanvas(data) {
 
         for (const element of rectangleElements) {
             drawRect(ctx, element)
+        }
+
+        for (const element of iconElements) {
+            await drawImage(ctx, element)
         }
 
         for (const element of textElements) {

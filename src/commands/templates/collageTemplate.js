@@ -1,29 +1,52 @@
+// Constantes globais
 const POSTER_WIDTH = 270
 const POSTER_HEIGHT = 405
 const ICON_SIZE = 23
 const ICON_MARGIN = 15
 const TEXT_PADDING = 15
+const GRADIENT_HEIGHT = 200
+const BOTTOM_TEXT_Y_OFFSET = 20
+const REGULAR_TEXT_Y_OFFSET = 50
 
-// Função auxiliar para quebrar texto em várias linhas
-function wrapText(ctx, text, maxWidth) {
-    const words = text.split(' ')
-    let lines = []
-    let currentLine = words[0]
-
-    for (let i = 1; i < words.length; i++) {
-        const word = words[i]
-        const width = ctx.measureText(currentLine + ' ' + word).width
-        if (width < maxWidth) {
-            currentLine += ' ' + word
-        } else {
-            lines.push(currentLine)
-            currentLine = word
-        }
-    }
-    lines.push(currentLine)
-    return lines
+// Funções auxiliares para criar elementos
+function createImageElement({ src, x, y, width, height }) {
+    return { type: 'image', src, x, y, width, height }
 }
 
+function createRectangleElement({ fillStyle, x, y, width, height }) {
+    return { type: 'rectangle', fillStyle, x, y, width, height }
+}
+
+function createTextElement({ text, x, y, font, fillStyle, shadow, maxWidth, lineHeight }) {
+    return { type: 'text', text, x, y, font, fillStyle, shadow, maxWidth, lineHeight }
+}
+
+function createIconElement({ src, x, y, width, height }) {
+    return { type: 'icon', src, x, y, width, height }
+}
+
+// Função para criar o gradiente
+function createGradientRectangle(x, y) {
+    return createRectangleElement({
+        fillStyle: {
+            type: 'linearGradient',
+            colors: [
+                { stop: 0, color: 'rgba(14, 14, 14, 0)' },
+                { stop: 1, color: 'rgba(14, 14, 14, 0.9)' }
+            ],
+            x0: x,
+            y0: y + POSTER_HEIGHT - GRADIENT_HEIGHT,
+            x1: x,
+            y1: y + POSTER_HEIGHT
+        },
+        x,
+        y: y + POSTER_HEIGHT - GRADIENT_HEIGHT,
+        width: POSTER_WIDTH,
+        height: GRADIENT_HEIGHT
+    })
+}
+
+// Função principal para gerar dados do pôster
 function generatePosterData(item, index, COLUMNS, param) {
     const column = index % COLUMNS
     const row = Math.floor(index / COLUMNS)
@@ -33,153 +56,96 @@ function generatePosterData(item, index, COLUMNS, param) {
     const posterElements = []
 
     // Verificar se a imagem do filme está disponível
-    if (item.film.image && item.film.image.large) {
-        posterElements.push({
-            type: 'image',
-            src: item.film.image.large,
-            x,
-            y,
-            width: POSTER_WIDTH,
-            height: POSTER_HEIGHT
-        })
+    if (item.film.image?.large) {
+        posterElements.push(createImageElement({ src: item.film.image.large, x, y, width: POSTER_WIDTH, height: POSTER_HEIGHT }))
     } else {
         // Adicionar um retângulo transparente caso não haja imagem
-        posterElements.push({
-            type: 'rectangle',
-            fillStyle: 'rgba(0, 0, 0, 0.5)',
-            x,
-            y,
-            width: POSTER_WIDTH,
-            height: POSTER_HEIGHT
-        })
+        posterElements.push(createRectangleElement({ fillStyle: 'rgba(0, 0, 0, 0.5)', x, y, width: POSTER_WIDTH, height: POSTER_HEIGHT }))
     }
 
     if (param === 'notext') return posterElements
 
-    posterElements.push({
-        type: 'rectangle',
-        fillStyle: {
-            type: 'linearGradient',
-            colors: [
-                { stop: 0, color: 'rgba(14, 14, 14, 0)' },
-                { stop: 1, color: 'rgba(14, 14, 14, 0.9)' }
-            ],
-            x0: x,
-            y0: y + POSTER_HEIGHT - 150,
-            x1: x,
-            y1: y + POSTER_HEIGHT
-        },
-        x,
-        y: y + POSTER_HEIGHT - 150,
-        width: POSTER_WIDTH,
-        height: 150
-    })
+    posterElements.push(createGradientRectangle(x, y))
 
-    const ctx = {
-        measureText: (text) => {
-            // Mock measureText to return a pseudo width
-            return { width: text.length * 10 }
-        }
-    }
-
-    const title = `${item.film.title} (${item.film.year})`
-    const titleLines = wrapText(ctx, title, POSTER_WIDTH - 2 * TEXT_PADDING)
-
-    // Verificar se deve desenhar o texto na parte inferior
+    const title = `${item.film.title}${item.film.year ? ` (${item.film.year})` : ''}`
     const shouldDrawTextAtBottom = !item.rating?.text && !item.isRewatch && !item.review
+    const textY = shouldDrawTextAtBottom ? y + POSTER_HEIGHT - BOTTOM_TEXT_Y_OFFSET : y + POSTER_HEIGHT - REGULAR_TEXT_Y_OFFSET
 
-    if (shouldDrawTextAtBottom) {
-        // Texto começa na parte inferior
-        titleLines.forEach((line, i) => {
-            posterElements.push({
-                type: 'text',
-                text: line,
-                x: x + TEXT_PADDING,
-                y: y + POSTER_HEIGHT - 20 - (titleLines.length - 1 - i) * 25,
-                font: 'bold 20px "Noto Sans", sans-serif',
-                fillStyle: '#ffffff',
-                shadow: {
-                    color: 'rgba(0, 0, 0, 0.5)',
-                    offsetX: 2,
-                    offsetY: 2,
-                    blur: 4
-                }
-            })
-        })
-    } else {
-        // Texto começa na posição padrão
-        titleLines.forEach((line, i) => {
-            posterElements.push({
-                type: 'text',
-                text: line,
-                x: x + TEXT_PADDING,
-                y: y + POSTER_HEIGHT - 50 - (titleLines.length - 1 - i) * 25,
-                font: 'bold 20px "Noto Sans", sans-serif',
-                fillStyle: '#ffffff',
-                shadow: {
-                    color: 'rgba(0, 0, 0, 0.5)',
-                    offsetX: 2,
-                    offsetY: 2,
-                    blur: 4
-                }
-            })
-        })
-    }
+    posterElements.push(createTextElement({
+        text: title,
+        x: x + TEXT_PADDING,
+        y: textY,
+        font: '20px "Noto Sans Bold", sans-serif',
+        fillStyle: '#ffffff',
+        shadow: {
+            color: 'rgba(0, 0, 0, 0.5)',
+            offsetX: 2,
+            offsetY: 2,
+            blur: 4
+        },
+        maxWidth: POSTER_WIDTH - 2 * TEXT_PADDING,
+        lineHeight: 25
+    }))
 
-    if (item.rating && item.rating.text) {
-        posterElements.push({
-            type: 'text',
+    if (item.rating?.text) {
+        posterElements.push(createTextElement({
             text: item.rating.text,
             x: x + 15,
             y: y + POSTER_HEIGHT - 15,
-            font: '25px "Noto Sans", sans-serif',
-            fillStyle: '#00c030'
-        })
+            font: '25px "Noto Sans Symbol", sans-serif',
+            fillStyle: '#00c030',
+            shadow: {
+                color: 'rgba(0, 0, 0, 0.5)',
+                offsetX: 2,
+                offsetY: 2,
+                blur: 4
+            },
+            maxWidth: POSTER_WIDTH - 2 * TEXT_PADDING,
+            lineHeight: 25
+        }))
     }
 
     let iconX = x + POSTER_WIDTH - ICON_MARGIN - ICON_SIZE
 
     if (item.review) {
-        posterElements.push({
-            type: 'image',
+        posterElements.push(createIconElement({
             src: './src/commands/templates/assets/review.png',
             x: iconX,
             y: y + POSTER_HEIGHT - ICON_MARGIN - ICON_SIZE,
             width: ICON_SIZE,
             height: ICON_SIZE
-        })
+        }))
         iconX -= ICON_SIZE + ICON_MARGIN
     }
 
     if (item.isRewatch) {
-        posterElements.push({
-            type: 'image',
+        posterElements.push(createIconElement({
             src: './src/commands/templates/assets/rewatch.png',
             x: iconX,
             y: y + POSTER_HEIGHT - ICON_MARGIN - ICON_SIZE,
             width: ICON_SIZE,
             height: ICON_SIZE
-        })
+        }))
     }
 
     return posterElements
 }
 
-function prepareData(films, COLUMNS, ROWS, param = null) {
+function collageTemplate(films, COLUMNS, ROWS, param = null) {
     const data = {
         type: 'collage',
-        width: COLUMNS * 270,
-        height: ROWS * 405,
+        width: COLUMNS * POSTER_WIDTH,
+        height: ROWS * POSTER_HEIGHT,
         background: '#0E0E0E',
         elements: []
     }
 
-    for (let i = 0; i < films.length; i++) {
-        const posterElements = generatePosterData(films[i], i, COLUMNS, param)
-        data.elements.push(...posterElements)  // Use spread operator to flatten the array
-    }
+    films.forEach((film, i) => {
+        const posterElements = generatePosterData(film, i, COLUMNS, param)
+        data.elements.push(...posterElements)
+    })
 
     return data
 }
 
-export default prepareData
+export default collageTemplate
