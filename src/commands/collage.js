@@ -16,7 +16,7 @@ async function collage(ctx) {
     logCommand('collage', telegram_id, chat_id)
 
     try {
-        ctx.replyWithChatAction('typing')
+        await ctx.replyWithChatAction('typing')
 
         const letterboxd_user = await getLetterboxdUser(telegram_id)
         if (!letterboxd_user) throw 'USER_NOT_FOUND'

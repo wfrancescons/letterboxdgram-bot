@@ -24,7 +24,7 @@ async function start(ctx) {
             `\nWelcome to the letterboxd bot 🤖🎵\n` +
             `\nUse /reg to set your Letterboxd's username\n` +
             `\nType / or /help to see a list of valid commands\n` +
-            `\nAccess @telelastfmnews for server status and news 📰`,
+            `\nAccess @telelastfmnews for news and server status`,
             { reply_to_message_id: ctx.message?.message_id }
         )
 
@@ -46,10 +46,13 @@ async function help(ctx) {
 
         await sendTextMessage(ctx,
             `Valid commands: 🤖\n` +
+
             `\n/lb \\- See your last watched movie` +
             `\n\`/reg letterboxduser\` \\- Set your Letterboxd's username` +
             `\n/about \\- See stats from your Letterboxd` +
-            `\n/collage \\- Generate a grid collage`, { parse_mode: 'MarkdownV2' }
+            `\n/collage \\- Generate a grid collage` +
+            `\n\nInline Mode \\- In any chat, type @letterboxdgrambot to load your Letterboxd diary` +
+            `\n\nAccess @telelastfmnews for news and server status`, { parse_mode: 'MarkdownV2' }
         )
 
     } catch (error) {
@@ -61,3 +64,4 @@ export {
     about, collage, help, inlineQuery, lb, reg,
     start
 }
+

@@ -30,7 +30,11 @@ async function reg(ctx) {
             ]
         }
 
-        if (user) await sendTextMessage(ctx, `${letterboxd_user} set as your Letterboxd's username ☑️`, extras)
+        if (user) {
+            await sendTextMessage(ctx,
+                `${letterboxd_user} set as your Letterboxd's username ☑️` +
+                `\n\nAccess @telelastfmnews for news and server status`, extras)
+        }
 
     } catch (error) {
         errorHandler(ctx, error, letterboxd_user)

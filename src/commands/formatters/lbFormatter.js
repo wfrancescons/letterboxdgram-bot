@@ -43,7 +43,7 @@ function lbFormatter(item) {
 
     const text = [
         `${first_name} ${isRewatch ? 'rewatched' : 'watched'}:`,
-        `\n📽️ ${film.title} (${film.year})`,
+        `\n📽️ ${film.title}${film.year ? ` (${film.year})` : ''}`,
         `\n📅 ${new Date(date.watched).toLocaleString('pt-BR', stringOptions)}`
     ]
 
