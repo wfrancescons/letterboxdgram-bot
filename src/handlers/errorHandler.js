@@ -1,8 +1,12 @@
+import createEntity from '../utils/createEntity.js'
 import { sendTextMessage } from '../utils/messageSender.js'
 
 export default async (ctx, error, info) => {
 
-    const extras = { reply_to_message_id: ctx.message?.message_id }
+    const extras = {
+        reply_to_message_id: ctx.message?.message_id,
+        entities: []
+    }
     const isInlineQuery = ctx.update?.inline_query
 
     try {
@@ -41,32 +45,39 @@ export default async (ctx, error, info) => {
                     break
                 }
 
-                extras.parse_mode = 'MarkdownV2'
+                const command = '/reg your_username'
+                const message = `⚠️ You need to sign up first to use the bot.\n` +
+                    `\nWhat's your username on Letterboxd? 🤔\n` +
+                    `\n➡️ Type ${command} to set it`
 
-                await sendTextMessage(ctx, 'Type `/reg letterboxdmusername` to set your Letterboxd\'s username', extras)
+                extras.entities.push(createEntity(message.indexOf(command), command.length, 'code'))
+
+                await sendTextMessage(ctx, message, extras)
                 break
             }
 
             case 'REG_WITHOUT_ARGS': {
-                await sendTextMessage(ctx,
-                    'Type /reg with with your Letterboxd\'s username.' +
-                    '\n\n➡️ Example: /reg letterboxdmusername' +
-                    '\n\nPlease, try again 🙂', extras
-                )
+
+                const command = '/reg your_username'
+                const message = `What's your username on Letterboxd? 🤔\n` +
+                    `\n➡️ Type ${command} to set it\n` +
+                    `\nPlease, try again 🙂`
+
+                extras.entities.push(createEntity(message.indexOf(command), command.length, 'code'))
+
+                await sendTextMessage(ctx, message, extras)
                 break
             }
 
             case 'NOT_A_VALID_LETTERBOXD_USER': {
-                extras.entities = [{
-                    offset: 0,
-                    length: info.length,
-                    type: 'bold'
-                }]
-                await sendTextMessage(ctx,
-                    `${info} doesn't seem to be a valid Letterboxd's username 🤔` +
-                    `\n\nPlease, try again 🙂`,
-                    extras
-                )
+
+                const message = `\n${info} isn't a valid Letterboxd username ❌\n` +
+                    `\nIs it correct? 🤔\n` +
+                    `\nPlease, try again 🙂`
+
+                extras.entities.push(createEntity(message.indexOf(info), info.length, 'bold'))
+
+                await sendTextMessage(ctx, message, extras)
                 break
             }
 
@@ -87,22 +98,24 @@ export default async (ctx, error, info) => {
                     break
                 }
 
-                extras.parse_mode = 'MarkdownV2'
+                const command = '/reg your_username'
+                const message = `There aren't any film in your Letterboxd Diary 🙁\n` +
+                    `Is your username correct? 🤔\n` +
+                    `\n➡️ Type ${command} to update it`
 
-                await sendTextMessage(ctx,
-                    'There aren\'t any film in your Letterboxd\'s Diary 🙁\n' +
-                    'Is your username correct? 🤔\n' +
-                    'Type `/reg letterboxdmusername` to set your Letterboxd\'s username',
-                    extras
-                )
+                extras.entities.push(createEntity(message.indexOf(command), command.length, 'code'))
+
+                await sendTextMessage(ctx, message, extras)
                 break
             }
 
             default: {
                 console.error('Error:', error)
+
+                // TODO
                 if (error.description.includes('Bad Request')) break
                 await ctx.reply(
-                    'Something went wrong with Letterboxd 🥴 \n' +
+                    'Something went wrong with Letterboxd 🥴\n' +
                     'But don\'t fret, let\'s give it another shot in a couple of minutes.\n' +
                     'If the issue keeps happening, contact me @telelastfmsac',
                     extras

@@ -1,6 +1,7 @@
 import { logCommand } from '../database/services/commandUsageLog.js'
 import { setLetterboxdUsername } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
+import createEntity from '../utils/createEntity.js'
 import { sendTextMessage } from '../utils/messageSender.js'
 
 async function reg(ctx) {
@@ -19,21 +20,18 @@ async function reg(ctx) {
 
         const user = await setLetterboxdUsername(telegram_id, letterboxd_user)
 
-        const extras = {
-            reply_to_message_id: ctx.message.message_id,
-            entities: [
-                {
-                    offset: 0,
-                    length: letterboxd_user.length,
-                    type: 'bold',
-                }
-            ]
-        }
-
         if (user) {
-            await sendTextMessage(ctx,
-                `${letterboxd_user} set as your Letterboxd's username ☑️` +
-                `\n\nAccess @telelastfmnews for news and server status`, extras)
+            const extras = {
+                reply_to_message_id: ctx.message.message_id,
+                entities: []
+            }
+
+            const message = `${letterboxd_user} set as your Letterboxd username ✅` +
+                `\n\n➡️ Access @telelastfmnews for news and server status`
+
+            extras.entities.push(createEntity(message.indexOf(letterboxd_user), letterboxd_user.length, 'bold'))
+
+            await sendTextMessage(ctx, message, extras)
         }
 
     } catch (error) {
