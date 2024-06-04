@@ -90,7 +90,7 @@ export default async (ctx, error, info) => {
                 extras.parse_mode = 'MarkdownV2'
 
                 await sendTextMessage(ctx,
-                    'There aren\'t any film in your Letterboxd. 🙁\n' +
+                    'There aren\'t any film in your Letterboxd\'s Diary 🙁\n' +
                     'Is your username correct? 🤔\n' +
                     'Type `/reg letterboxdmusername` to set your Letterboxd\'s username',
                     extras
