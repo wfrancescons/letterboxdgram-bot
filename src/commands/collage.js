@@ -3,7 +3,8 @@ import { getLetterboxdUser } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 import renderCanvas from '../rendering/renderCanva.js'
 import { getLastFilmsSeen } from '../services/letterboxd.js'
-import prepareData from './templates/collageTemplate.js'
+import { sendPhotoMessage, sendTextMessage } from '../utils/messageSender.js'
+import collageTemplate from './templates/collageTemplate.js'
 
 async function collage(ctx) {
 
@@ -15,7 +16,7 @@ async function collage(ctx) {
     logCommand('collage', telegram_id, chat_id)
 
     try {
-        await ctx.replyWithChatAction('typing')
+        ctx.replyWithChatAction('typing')
 
         const letterboxd_user = await getLetterboxdUser(telegram_id)
         if (!letterboxd_user) throw 'USER_NOT_FOUND'
@@ -26,7 +27,7 @@ async function collage(ctx) {
 
         if (!grid) grid = '4x3'
 
-        //verifica se a grade é valida - >= 2x2 e <= 4x4
+        //verifica se a grade é valida - >= 1x1 e <= 4x4
         const regex_result = grid.match(grid_regex)
         if (!regex_result) return errorHandler(ctx, 'COLLAGE_INCORRECT_ARGS')
 
@@ -35,24 +36,24 @@ async function collage(ctx) {
 
         if ((COLUMNS > 4 || COLUMNS < 1) || (ROWS > 4 || ROWS < 1)) return errorHandler(ctx, 'COLLAGE_INCORRECT_ARGS')
 
-        const response = await ctx.reply(
+        const extra = { reply_to_message_id: ctx.message?.message_id }
+
+        const response = await sendTextMessage(ctx,
             'Generating your collage 🟠🟢🔵\n' +
-            'It may take a while...', { reply_to_message_id: ctx.message?.message_id }
+            'It may take a while...', extra
         )
 
-        await ctx.replyWithChatAction('upload_photo')
+        extra.caption = `${first_name}, your ${grid} collage`
+
+        ctx.replyWithChatAction('upload_photo')
 
         const lastFilms = await getLastFilmsSeen(letterboxd_user, COLUMNS * ROWS)
+        const template = collageTemplate(lastFilms, COLUMNS, ROWS, param)
 
-        const template = prepareData(lastFilms, COLUMNS, ROWS, param)
+        const canva = await renderCanvas(template)
 
-        renderCanvas(template).then(canva => {
-            ctx.replyWithPhoto({ source: canva }, { caption: `${first_name}, your ${grid} collage`, reply_to_message_id: ctx.message?.message_id })
-                .then(() => ctx.deleteMessage(response.message_id))
-                .catch(error => {
-                    throw error
-                })
-        })
+        await sendPhotoMessage(ctx, { source: canva }, extra)
+        await ctx.deleteMessage(response.message_id)
 
     } catch (error) {
         errorHandler(ctx, error)

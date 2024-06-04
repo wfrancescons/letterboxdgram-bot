@@ -1,4 +1,5 @@
 import { logCommand } from '../database/services/commandUsageLog.js'
+import { sendTextMessage } from '../utils/messageSender.js'
 import about from './about.js'
 import collage from './collage.js'
 import inlineQuery from './inlineQuery.js'
@@ -18,7 +19,7 @@ async function start(ctx) {
 
         await ctx.replyWithChatAction('typing')
 
-        await ctx.reply(
+        await sendTextMessage(ctx,
             `Hello, ${first_name} 👋\n` +
             `\nWelcome to the letterboxd bot 🤖🎵\n` +
             `\nUse /reg to set your Letterboxd's username\n` +
@@ -43,12 +44,12 @@ async function help(ctx) {
     try {
         await ctx.replyWithChatAction('typing')
 
-        await ctx.replyWithMarkdown(
+        await sendTextMessage(ctx,
             `Valid commands: 🤖\n` +
-            `\n/lb - See your last watched movie` +
-            `\n\`/reg letterboxduser\` - Set your Letterboxd's username` +
-            `\n/about - See stats from your Letterboxd` +
-            `\n/collage - Generate a grid collage`
+            `\n/lb \\- See your last watched movie` +
+            `\n\`/reg letterboxduser\` \\- Set your Letterboxd's username` +
+            `\n/about \\- See stats from your Letterboxd` +
+            `\n/collage \\- Generate a grid collage`, { parse_mode: 'MarkdownV2' }
         )
 
     } catch (error) {
@@ -60,4 +61,3 @@ export {
     about, collage, help, inlineQuery, lb, reg,
     start
 }
-

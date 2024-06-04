@@ -1,6 +1,7 @@
 import { logCommand } from '../database/services/commandUsageLog.js'
 import { setLetterboxdUsername } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
+import { sendTextMessage } from '../utils/messageSender.js'
 
 async function reg(ctx) {
 
@@ -29,7 +30,7 @@ async function reg(ctx) {
             ]
         }
 
-        if (user) await ctx.reply(`${letterboxd_user} set as your Letterboxd's username ☑️`, extras)
+        if (user) await sendTextMessage(ctx, `${letterboxd_user} set as your Letterboxd's username ☑️`, extras)
 
     } catch (error) {
         errorHandler(ctx, error, letterboxd_user)

@@ -16,10 +16,29 @@ try {
     bot.start((ctx) => Commands.start(ctx))
     bot.help((ctx) => Commands.help(ctx))
 
-    bot.command('lb', (ctx) => Commands.lb(ctx))
-    bot.command('reg', (ctx) => Commands.reg(ctx))
-    bot.command('about', (ctx) => Commands.about(ctx))
-    bot.command('collage', (ctx) => Commands.collage(ctx))
+    bot.command('lb', (ctx) => {
+        (async () => {
+            await Commands.lb(ctx)
+        })()
+    })
+
+    bot.command('reg', (ctx) => {
+        (async () => {
+            await Commands.reg(ctx)
+        })()
+    })
+
+    bot.command('about', (ctx) => {
+        (async () => {
+            await Commands.about(ctx)
+        })()
+    })
+
+    bot.command('collage', (ctx) => {
+        (async () => {
+            await Commands.collage(ctx)
+        })()
+    })
 
     bot.on('inline_query', (ctx) => Commands.inlineQuery(ctx))
 

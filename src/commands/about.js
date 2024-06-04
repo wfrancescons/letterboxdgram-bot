@@ -2,6 +2,7 @@ import { logCommand } from '../database/services/commandUsageLog.js'
 import { getLetterboxdUser } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 import { getLetterboxdUserStats } from '../services/letterboxd.js'
+import { sendTextMessage } from '../utils/messageSender.js'
 import aboutModel from './formatters/aboutModel.js'
 
 async function about(ctx) {
@@ -39,7 +40,7 @@ async function about(ctx) {
             reply_to_message_id: ctx.message?.message_id
         }
 
-        ctx.reply(message.text, extras)
+        await sendTextMessage(ctx, message.text, extras)
 
     } catch (error) {
         errorHandler(ctx, error)
