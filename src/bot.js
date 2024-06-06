@@ -43,6 +43,8 @@ try {
     bot.start((ctx) => Commands.start(ctx))
     bot.help((ctx) => Commands.help(ctx))
 
+    bot.command('collage', (ctx) => ctx.reply(`Comando alterado para /gridlb\nMais informações: ${config.bot.news_channel}`))
+
     bot.command('lb', (ctx) => {
         (async () => {
             await Commands.lb(ctx)
