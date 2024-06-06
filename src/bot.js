@@ -33,6 +33,12 @@ try {
         { command: 'help', description: 'Send a list of valid commands' }
     ])
 
+    // Ignore channel messages
+    bot.use((ctx, next) => {
+        if (ctx.from.id === 777000) return
+        next()
+    })
+
     // Set bot response
     bot.start((ctx) => Commands.start(ctx))
     bot.help((ctx) => Commands.help(ctx))
