@@ -31,7 +31,7 @@ async function start(ctx) {
 
         const message = `Hello, ${first_name} 👋\n` +
             `Welcome to the letterboxd bot 🟠🟢🔵\n` +
-            `\n➡️ Use /setlb to set your Letterboxd's username\n` +
+            `\n➡️ Use /setlb to set your Letterboxd username\n` +
             `\n➡️ Type / or /help to see a list of valid commands\n` +
             `\nAccess ${config.bot.news_channel} for news and server status`
 
@@ -73,3 +73,4 @@ export {
     gridlb, help, inlineQuery, lb, profilelb, setlb,
     start
 }
+
