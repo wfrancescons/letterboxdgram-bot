@@ -1,17 +1,18 @@
+import config from '../config.js'
 import { logCommand } from '../database/services/commandUsageLog.js'
 import { setLetterboxdUsername } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 import createEntity from '../utils/createEntity.js'
 import { sendTextMessage } from '../utils/messageSender.js'
 
-async function reg(ctx) {
+async function setlb(ctx) {
 
     const telegram_id = ctx.message.from.id
     const chat_id = ctx.message.chat.id
     const text = ctx.update.message.text.split(' ')
     const [command, letterboxd_user] = text
 
-    logCommand('reg', telegram_id, chat_id)
+    logCommand('setlb', telegram_id, chat_id)
 
     try {
         await ctx.replyWithChatAction('typing')
@@ -27,7 +28,7 @@ async function reg(ctx) {
             }
 
             const message = `${letterboxd_user} set as your Letterboxd username ✅` +
-                `\n\n➡️ Access @telelastfmnews for news and server status`
+                `\n\n➡️ Access ${config.bot.news_channel} for news and server status`
 
             extras.entities.push(createEntity(message.indexOf(letterboxd_user), letterboxd_user.length, 'bold'))
 
@@ -39,4 +40,4 @@ async function reg(ctx) {
     }
 }
 
-export default reg
+export default setlb

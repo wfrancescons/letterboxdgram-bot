@@ -1,3 +1,4 @@
+import config from '../config.js'
 import createEntity from '../utils/createEntity.js'
 import { sendTextMessage } from '../utils/messageSender.js'
 
@@ -20,9 +21,9 @@ export default async (ctx, error, info) => {
                     'Invalid argumments 🤔\n\n' +
                     '✅ Type a columns x rows value greater than 0 and up to 4\n' +
                     '\n➡️ Examples:\n' +
-                    '`/collage 3x3`\n' +
-                    '`/collage 4x1`\n' +
-                    '`/collage 4x4 notext`',
+                    '`/gridlb 3x3`\n' +
+                    '`/gridlb 4x1`\n' +
+                    '`/gridlb 4x4 notext`',
                     extras
                 )
                 break
@@ -35,9 +36,9 @@ export default async (ctx, error, info) => {
                         type: 'article',
                         id: 1,
                         title: '⚠️ User not found',
-                        description: 'Use /reg to set your Letterboxd\'s username',
+                        description: 'Use /setlb to set your Letterboxd username',
                         input_message_content: {
-                            message_text: 'Type /reg to set your Letterboxd\'s username'
+                            message_text: 'Type /setlb to set your Letterboxd username'
                         }
                     }]
 
@@ -45,8 +46,8 @@ export default async (ctx, error, info) => {
                     break
                 }
 
-                const command = '/reg your_username'
-                const message = `⚠️ You need to sign up first to use the bot.\n` +
+                const command = '/setlb your_username'
+                const message = `⚠️ You need to sign up first to use the bot\n` +
                     `\nWhat's your username on Letterboxd? 🤔\n` +
                     `\n➡️ Type ${command} to set it`
 
@@ -58,7 +59,7 @@ export default async (ctx, error, info) => {
 
             case 'REG_WITHOUT_ARGS': {
 
-                const command = '/reg your_username'
+                const command = '/setlb your_username'
                 const message = `What's your username on Letterboxd? 🤔\n` +
                     `\n➡️ Type ${command} to set it\n` +
                     `\nPlease, try again 🙂`
@@ -98,7 +99,7 @@ export default async (ctx, error, info) => {
                     break
                 }
 
-                const command = '/reg your_username'
+                const command = '/setlb your_username'
                 const message = `There aren't any film in your Letterboxd Diary 🙁\n` +
                     `Is your username correct? 🤔\n` +
                     `\n➡️ Type ${command} to update it`
@@ -110,14 +111,14 @@ export default async (ctx, error, info) => {
             }
 
             default: {
-                console.error('Error:', error)
-
                 // TODO
-                if (error.description.includes('Bad Request')) break
+                if (error.description.includes('message to delete not found')) break
+
+                console.error('Error:', error)
                 await ctx.reply(
                     'Something went wrong with Letterboxd 🥴\n' +
                     'But don\'t fret, let\'s give it another shot in a couple of minutes.\n' +
-                    'If the issue keeps happening, contact me @telelastfmsac',
+                    `If the issue keeps happening, contact me ${config.bot.support_chat}`,
                     extras
                 )
                 break

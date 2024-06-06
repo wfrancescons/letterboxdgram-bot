@@ -3,15 +3,15 @@ import { getLetterboxdUser } from '../database/services/user.js'
 import errorHandler from '../handlers/errorHandler.js'
 import { getLetterboxdUserStats } from '../services/letterboxd.js'
 import { sendTextMessage } from '../utils/messageSender.js'
-import aboutFormatter from './formatters/aboutFormatter.js'
+import profilelbFormatter from './formatters/profilelbFormatter.js'
 
-async function about(ctx) {
+async function profilelb(ctx) {
 
     const telegram_id = ctx.message.from.id
     const chat_id = ctx.message.chat.id
     const first_name = ctx.update.message.from.first_name
 
-    logCommand('about', telegram_id, chat_id)
+    logCommand('profilelb', telegram_id, chat_id)
 
     try {
         await ctx.replyWithChatAction('typing')
@@ -33,7 +33,7 @@ async function about(ctx) {
             lastFilms
         }
 
-        const message = aboutFormatter(dataToFormat)
+        const message = profilelbFormatter(dataToFormat)
         const extras = {
             entities: message.entities,
             link_preview_options: message.link_preview_options,
@@ -47,4 +47,4 @@ async function about(ctx) {
     }
 }
 
-export default about
+export default profilelb

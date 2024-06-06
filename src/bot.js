@@ -4,13 +4,34 @@ import sequelize from './database/database.js'
 
 import * as Commands from './commands/commands.js'
 
-const bot = new Telegraf(config.bot_token)
+const bot = new Telegraf(config.bot.token)
 
 try {
     console.log('BOT: starting components')
 
     // Try to connect to database
     await sequelize.authenticate()
+
+    // Set bot 'Description'
+    bot.telegram.setMyDescription('Share your Letterboxd activity with your friends 🎥')
+
+    // Set bot 'About'
+    const aboutDescription = `Share your Letterboxd activity with your friends 🎥\n` +
+        `\n📰 News: ${config.bot.news_channel}\n` +
+        `💬 Need help? Support: ${config.bot.support_chat}`
+
+    if (aboutDescription.length <= 120) {
+        bot.telegram.setMyShortDescription(aboutDescription)
+    } else console.log(`BOT: 'About' section unchanged as string is longer than 120 characters`)
+
+    // Set command descriptions
+    bot.telegram.setMyCommands([
+        { command: 'lb', description: 'Send your last logged movie' },
+        { command: 'gridlb', description: 'Generate a grid collage' },
+        { command: 'profilelb', description: 'Send stats from your Letterboxd' },
+        { command: 'setlb', description: 'Set your Letterboxd username' },
+        { command: 'help', description: 'Send a list of valid commands' }
+    ])
 
     // Set bot response
     bot.start((ctx) => Commands.start(ctx))
@@ -22,21 +43,21 @@ try {
         })()
     })
 
-    bot.command('reg', (ctx) => {
+    bot.command('gridlb', (ctx) => {
         (async () => {
-            await Commands.reg(ctx)
+            await Commands.gridlb(ctx)
         })()
     })
 
-    bot.command('about', (ctx) => {
+    bot.command('profilelb', (ctx) => {
         (async () => {
-            await Commands.about(ctx)
+            await Commands.profilelb(ctx)
         })()
     })
 
-    bot.command('collage', (ctx) => {
+    bot.command('setlb', (ctx) => {
         (async () => {
-            await Commands.collage(ctx)
+            await Commands.setlb(ctx)
         })()
     })
 

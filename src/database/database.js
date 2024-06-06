@@ -13,9 +13,6 @@ try {
     const userCount = await Models.User.count()
     console.log(`DB: Total de registros na tabela Users: ${userCount}`)
 
-    const commandUsageLogsCount = await Models.CommandUsageLogs.count()
-    console.log(`DB: Total de registros na tabela CommandUsageLogs: ${commandUsageLogsCount}`)
-
 } catch (error) {
     console.error('DB: Erro ao sincronizar tabelas ou contar registros:', error)
 }

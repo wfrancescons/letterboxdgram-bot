@@ -1,4 +1,4 @@
-function aboutFormatter(data) {
+function profilelb(data) {
 
     const {
         first_name,
@@ -50,4 +50,4 @@ function aboutFormatter(data) {
 
 }
 
-export default aboutFormatter
+export default profilelb

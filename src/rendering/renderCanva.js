@@ -82,7 +82,7 @@ async function renderCanvas(data) {
     ctx.fillStyle = data.background
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    if (data.type === 'collage') {
+    if (data.type === 'grid') {
         const imageElements = []
         const rectangleElements = []
         const iconElements = []

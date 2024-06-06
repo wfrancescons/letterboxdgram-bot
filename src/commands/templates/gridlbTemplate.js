@@ -131,9 +131,9 @@ function generatePosterData(item, index, COLUMNS, param) {
     return posterElements
 }
 
-function collageTemplate(films, COLUMNS, ROWS, param = null) {
+function gridlbTemplate(films, COLUMNS, ROWS, param = null) {
     const data = {
-        type: 'collage',
+        type: 'grid',
         width: COLUMNS * POSTER_WIDTH,
         height: ROWS * POSTER_HEIGHT,
         background: '#0E0E0E',
@@ -148,4 +148,4 @@ function collageTemplate(films, COLUMNS, ROWS, param = null) {
     return data
 }
 
-export default collageTemplate
+export default gridlbTemplate
