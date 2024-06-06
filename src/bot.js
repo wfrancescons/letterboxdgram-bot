@@ -35,8 +35,17 @@ try {
 
     // Ignore channel messages
     bot.use((ctx, next) => {
-        if (ctx.from.id === 777000) return
-        next()
+        if (ctx.message) {
+            const isFromChannel = ctx.message.chat?.type === 'channel'
+            const isForwardedFromChannel = ctx.message.forward_from_chat?.type === 'channel'
+            const isFromTelegram = ctx.from?.id === 777000
+
+            if (isFromChannel || isForwardedFromChannel || isFromTelegram) {
+                return
+            }
+        }
+
+        return next()
     })
 
     // Set bot response
