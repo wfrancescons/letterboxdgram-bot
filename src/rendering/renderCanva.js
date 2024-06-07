@@ -120,7 +120,7 @@ async function renderCanvas(data) {
         }
     }
 
-    return canvas.toBuffer()
+    return canvas.toBuffer('image/jpeg', { quality: 0.9 })
 }
 
 export default renderCanvas
