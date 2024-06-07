@@ -1,14 +1,3 @@
-// Constantes globais
-const POSTER_WIDTH = 270
-const POSTER_HEIGHT = 405
-const ICON_SIZE = 23
-const ICON_MARGIN = 15
-const TEXT_PADDING = 15
-const GRADIENT_HEIGHT = 200
-const BOTTOM_TEXT_Y_OFFSET = 20
-const REGULAR_TEXT_Y_OFFSET = 50
-
-// Funções auxiliares para criar elementos
 function createImageElement({ src, x, y, width, height }) {
     return { type: 'image', src, x, y, width, height }
 }
@@ -25,8 +14,7 @@ function createIconElement({ src, x, y, width, height }) {
     return { type: 'icon', src, x, y, width, height }
 }
 
-// Função para criar o gradiente
-function createGradientRectangle(x, y) {
+function createGradientRectangle(x, y, config) {
     return createRectangleElement({
         fillStyle: {
             type: 'linearGradient',
@@ -35,47 +23,46 @@ function createGradientRectangle(x, y) {
                 { stop: 1, color: 'rgba(14, 14, 14, 0.9)' }
             ],
             x0: x,
-            y0: y + POSTER_HEIGHT - GRADIENT_HEIGHT,
+            y0: y + config.POSTER_HEIGHT - config.GRADIENT_HEIGHT,
             x1: x,
-            y1: y + POSTER_HEIGHT
+            y1: y + config.POSTER_HEIGHT
         },
         x,
-        y: y + POSTER_HEIGHT - GRADIENT_HEIGHT,
-        width: POSTER_WIDTH,
-        height: GRADIENT_HEIGHT
+        y: y + config.POSTER_HEIGHT - config.GRADIENT_HEIGHT,
+        width: config.POSTER_WIDTH,
+        height: config.GRADIENT_HEIGHT
     })
 }
 
-// Função principal para gerar dados do pôster
-function generatePosterData(item, index, COLUMNS, param) {
-    const column = index % COLUMNS
-    const row = Math.floor(index / COLUMNS)
-    const x = column * POSTER_WIDTH
-    const y = row * POSTER_HEIGHT
+function generatePosterData(item, index, columns, param, config) {
+    const column = index % columns
+    const row = Math.floor(index / columns)
+    const x = column * config.POSTER_WIDTH
+    const y = row * config.POSTER_HEIGHT
 
     const posterElements = []
 
     // Verificar se a imagem do filme está disponível
     if (item.film.image?.large) {
-        posterElements.push(createImageElement({ src: item.film.image.large, x, y, width: POSTER_WIDTH, height: POSTER_HEIGHT }))
+        posterElements.push(createImageElement({ src: item.film.image.large, x, y, width: config.POSTER_WIDTH, height: config.POSTER_HEIGHT }))
     } else {
         // Adicionar um retângulo transparente caso não haja imagem
-        posterElements.push(createRectangleElement({ fillStyle: 'rgba(0, 0, 0, 0.5)', x, y, width: POSTER_WIDTH, height: POSTER_HEIGHT }))
+        posterElements.push(createRectangleElement({ fillStyle: 'rgba(0, 0, 0, 0.5)', x, y, width: config.POSTER_WIDTH, height: config.POSTER_HEIGHT }))
     }
 
     if (param === 'notext') return posterElements
 
-    posterElements.push(createGradientRectangle(x, y))
+    posterElements.push(createGradientRectangle(x, y, config))
 
     const title = `${item.film.title}${item.film.year ? ` (${item.film.year})` : ''}`
     const shouldDrawTextAtBottom = !item.rating?.text && !item.isRewatch && !item.review
-    const textY = shouldDrawTextAtBottom ? y + POSTER_HEIGHT - BOTTOM_TEXT_Y_OFFSET : y + POSTER_HEIGHT - REGULAR_TEXT_Y_OFFSET
+    const textY = shouldDrawTextAtBottom ? y + config.POSTER_HEIGHT - config.BOTTOM_TEXT_Y_OFFSET : y + config.POSTER_HEIGHT - config.REGULAR_TEXT_Y_OFFSET
 
     posterElements.push(createTextElement({
         text: title,
-        x: x + TEXT_PADDING,
+        x: x + config.TEXT_PADDING,
         y: textY,
-        font: '20px "Noto Sans Bold", sans-serif',
+        font: `${config.TITLE_FONT_SIZE}px "Noto Sans Bold", sans-serif`,
         fillStyle: '#ffffff',
         shadow: {
             color: 'rgba(0, 0, 0, 0.5)',
@@ -83,16 +70,16 @@ function generatePosterData(item, index, COLUMNS, param) {
             offsetY: 2,
             blur: 4
         },
-        maxWidth: POSTER_WIDTH - 2 * TEXT_PADDING,
-        lineHeight: 25
+        maxWidth: config.POSTER_WIDTH - 2 * config.TEXT_PADDING,
+        lineHeight: config.TEXT_LINE_HEIGHT
     }))
 
     if (item.rating?.text) {
         posterElements.push(createTextElement({
             text: item.rating.text,
-            x: x + 15,
-            y: y + POSTER_HEIGHT - 15,
-            font: '25px "Noto Sans Symbol", sans-serif',
+            x: x + config.TEXT_PADDING,
+            y: y + config.POSTER_HEIGHT - config.TEXT_PADDING,
+            font: `${config.RATING_FONT_SIZE}px "Noto Sans Symbol", sans-serif`,
             fillStyle: '#00c030',
             shadow: {
                 color: 'rgba(0, 0, 0, 0.5)',
@@ -100,48 +87,79 @@ function generatePosterData(item, index, COLUMNS, param) {
                 offsetY: 2,
                 blur: 4
             },
-            maxWidth: POSTER_WIDTH - 2 * TEXT_PADDING,
-            lineHeight: 25
+            maxWidth: config.POSTER_WIDTH - 2 * config.TEXT_PADDING,
+            lineHeight: config.TEXT_LINE_HEIGHT
         }))
     }
 
-    let iconX = x + POSTER_WIDTH - ICON_MARGIN - ICON_SIZE
+    let iconX = x + config.POSTER_WIDTH - config.ICON_MARGIN - config.ICON_SIZE
 
     if (item.review) {
         posterElements.push(createIconElement({
             src: './src/commands/templates/assets/review.png',
             x: iconX,
-            y: y + POSTER_HEIGHT - ICON_MARGIN - ICON_SIZE,
-            width: ICON_SIZE,
-            height: ICON_SIZE
+            y: y + config.POSTER_HEIGHT - config.ICON_MARGIN - config.ICON_SIZE,
+            width: config.ICON_SIZE,
+            height: config.ICON_SIZE
         }))
-        iconX -= ICON_SIZE + ICON_MARGIN
+        iconX -= config.ICON_SIZE + config.ICON_MARGIN
     }
 
     if (item.isRewatch) {
         posterElements.push(createIconElement({
             src: './src/commands/templates/assets/rewatch.png',
             x: iconX,
-            y: y + POSTER_HEIGHT - ICON_MARGIN - ICON_SIZE,
-            width: ICON_SIZE,
-            height: ICON_SIZE
+            y: y + config.POSTER_HEIGHT - config.ICON_MARGIN - config.ICON_SIZE,
+            width: config.ICON_SIZE,
+            height: config.ICON_SIZE
         }))
     }
 
     return posterElements
 }
 
-function gridlbTemplate(films, COLUMNS, ROWS, param = null) {
+function gridlbTemplate({ lastFilms, columns, rows, param = null }) {
+
+    let config = {
+        POSTER_WIDTH: 270,
+        POSTER_HEIGHT: 405,
+        GRADIENT_HEIGHT: 200,
+        ICON_SIZE: 23,
+        ICON_MARGIN: 15,
+        TEXT_PADDING: 15,
+        TEXT_LINE_HEIGHT: 25,
+        BOTTOM_TEXT_Y_OFFSET: 20,
+        REGULAR_TEXT_Y_OFFSET: 50,
+        TITLE_FONT_SIZE: 20,
+        RATING_FONT_SIZE: 25
+    }
+
+    if (columns > 4 || rows > 4) {
+        config = {
+            POSTER_WIDTH: 160,
+            POSTER_HEIGHT: 240,
+            GRADIENT_HEIGHT: 130,
+            ICON_SIZE: 15,
+            ICON_MARGIN: 10,
+            TEXT_PADDING: 10,
+            TEXT_LINE_HEIGHT: 20,
+            BOTTOM_TEXT_Y_OFFSET: 16,
+            REGULAR_TEXT_Y_OFFSET: 33,
+            TITLE_FONT_SIZE: 17,
+            RATING_FONT_SIZE: 18
+        }
+    }
+
     const data = {
         type: 'grid',
-        width: COLUMNS * POSTER_WIDTH,
-        height: ROWS * POSTER_HEIGHT,
+        width: columns * config.POSTER_WIDTH,
+        height: rows * config.POSTER_HEIGHT,
         background: '#0E0E0E',
         elements: []
     }
 
-    films.forEach((film, i) => {
-        const posterElements = generatePosterData(film, i, COLUMNS, param)
+    lastFilms.forEach((film, i) => {
+        const posterElements = generatePosterData(film, i, columns, param, config)
         data.elements.push(...posterElements)
     })
 

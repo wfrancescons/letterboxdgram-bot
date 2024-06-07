@@ -19,11 +19,11 @@ export default async (ctx, error, info) => {
 
                 await sendTextMessage(ctx,
                     'Invalid argumments 🤔\n\n' +
-                    '✅ Type a columns x rows value greater than 0 and up to 4\n' +
+                    '✅ Type a columns x rows value greater than 0 and up to 7\n' +
                     '\n➡️ Examples:\n' +
-                    '`/gridlb 3x3`\n' +
                     '`/gridlb 4x1`\n' +
-                    '`/gridlb 4x4 notext`',
+                    '`/gridlb 5x3`\n' +
+                    '`/gridlb 7x7 notext`',
                     extras
                 )
                 break

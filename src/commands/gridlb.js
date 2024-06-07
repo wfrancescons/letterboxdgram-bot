@@ -7,6 +7,33 @@ import createEntity from '../utils/createEntity.js'
 import { sendPhotoMessage, sendTextMessage } from '../utils/messageSender.js'
 import gridlbTemplate from './templates/gridlbTemplate.js'
 
+const MAX_ROWS = 7
+const MIN_ROWS = 1
+const MAX_COLUMNS = 7
+const MIN_COLUMNS = 1
+const DEFAULT_GRID = '4x3'
+const GRID_REGEX = /^(\d+)x(\d+)$/
+
+function parseArgs(args) {
+    let grid = args.find(arg => arg.match(GRID_REGEX)) || DEFAULT_GRID
+    let param = args.find(arg => arg === 'notext')
+    return { grid, param }
+}
+
+function validateGrid(grid) {
+    const match = grid.match(GRID_REGEX)
+    if (!match) throw 'COLLAGE_INCORRECT_ARGS'
+
+    const COLUMNS = Number(match[1])
+    const ROWS = Number(match[2])
+
+    if (COLUMNS > MAX_COLUMNS || COLUMNS < MIN_COLUMNS || ROWS > MAX_ROWS || ROWS < MIN_ROWS) {
+        throw 'COLLAGE_INCORRECT_ARGS'
+    }
+
+    return { COLUMNS, ROWS }
+}
+
 async function gridlb(ctx) {
 
     const telegram_id = ctx.message.from.id
@@ -22,20 +49,8 @@ async function gridlb(ctx) {
         const letterboxd_user = await getLetterboxdUser(telegram_id)
         if (!letterboxd_user) throw 'USER_NOT_FOUND'
 
-        const grid_regex = /^(\d+)x(\d+)$/
-        let grid = args.find(arg => arg.match(grid_regex))
-        let param = args.find(arg => arg === 'notext')
-
-        if (!grid) grid = '4x3'
-
-        //verifica se a grade é composta por números e >= 1x1 e <= 4x4
-        const regex_result = grid.match(grid_regex)
-        if (!regex_result) return errorHandler(ctx, 'COLLAGE_INCORRECT_ARGS')
-
-        const COLUMNS = Number(regex_result[1])
-        const ROWS = Number(regex_result[2])
-
-        if ((COLUMNS > 4 || COLUMNS < 1) || (ROWS > 4 || ROWS < 1)) return errorHandler(ctx, 'COLLAGE_INCORRECT_ARGS')
+        const { grid, param } = parseArgs(args)
+        const { COLUMNS, ROWS } = validateGrid(grid)
 
         const lastFilms = await getLastFilmsSeen(letterboxd_user, COLUMNS * ROWS)
 
@@ -46,8 +61,7 @@ async function gridlb(ctx) {
 
         const exampleCommand = '/gridlb 4x1 notext'
         const tipText = '💡 Tip: you can define your grid or make a collage with no text\n'
-        const responseMessage = `Generating your ${grid} grid 🟠🟢🔵\n` +
-            `⏰ It may take a while\n` +
+        const responseMessage = `Generating your ${grid} grid...\n` +
             `\n${tipText}` +
             `\n➡️ Example: ${exampleCommand}`
 
@@ -63,7 +77,14 @@ async function gridlb(ctx) {
 
         await ctx.replyWithChatAction('upload_photo')
 
-        const template = gridlbTemplate(lastFilms, COLUMNS, ROWS, param)
+        const templateData = {
+            lastFilms,
+            columns: COLUMNS,
+            rows: ROWS,
+            param
+        }
+
+        const template = gridlbTemplate(templateData)
         const canva = await renderCanvas(template)
 
         await sendPhotoMessage(ctx, { source: canva }, extra)
