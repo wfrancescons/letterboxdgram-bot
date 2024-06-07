@@ -121,33 +121,17 @@ function generatePosterData(item, index, columns, param, config) {
 function gridlbTemplate({ lastFilms, columns, rows, param = null }) {
 
     let config = {
-        POSTER_WIDTH: 270,
-        POSTER_HEIGHT: 405,
+        POSTER_WIDTH: 230,
+        POSTER_HEIGHT: 345,
         GRADIENT_HEIGHT: 200,
         ICON_SIZE: 23,
         ICON_MARGIN: 15,
         TEXT_PADDING: 15,
-        TEXT_LINE_HEIGHT: 25,
+        TEXT_LINE_HEIGHT: 23,
         BOTTOM_TEXT_Y_OFFSET: 20,
-        REGULAR_TEXT_Y_OFFSET: 50,
-        TITLE_FONT_SIZE: 20,
-        RATING_FONT_SIZE: 25
-    }
-
-    if (columns > 4 || rows > 4) {
-        config = {
-            POSTER_WIDTH: 160,
-            POSTER_HEIGHT: 240,
-            GRADIENT_HEIGHT: 130,
-            ICON_SIZE: 15,
-            ICON_MARGIN: 10,
-            TEXT_PADDING: 10,
-            TEXT_LINE_HEIGHT: 20,
-            BOTTOM_TEXT_Y_OFFSET: 16,
-            REGULAR_TEXT_Y_OFFSET: 33,
-            TITLE_FONT_SIZE: 17,
-            RATING_FONT_SIZE: 18
-        }
+        REGULAR_TEXT_Y_OFFSET: 45,
+        TITLE_FONT_SIZE: 17,
+        RATING_FONT_SIZE: 23
     }
 
     const data = {
