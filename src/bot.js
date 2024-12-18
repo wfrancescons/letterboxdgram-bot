@@ -3,6 +3,9 @@ import config from './config.js'
 import sequelize from './database/database.js'
 
 import * as Commands from './commands/commands.js'
+import ignoreChannelMessage from './middlewares/ignoreChannelMessages.js'
+import parseArgs from './middlewares/parseArgs.js'
+import throttleCommands from './middlewares/throttleCommands.js'
 
 const bot = new Telegraf(config.bot.token)
 
@@ -33,20 +36,9 @@ try {
         { command: 'help', description: 'Send a list of valid commands' }
     ])
 
-    // Ignore channel messages
-    bot.use((ctx, next) => {
-        if (ctx.message) {
-            const isFromChannel = ctx.message.chat?.type === 'channel'
-            const isForwardedFromChannel = ctx.message.forward_from_chat?.type === 'channel'
-            const isFromTelegram = ctx.from?.id === 777000
-
-            if (isFromChannel || isForwardedFromChannel || isFromTelegram) {
-                return
-            }
-        }
-
-        return next()
-    })
+    bot.use(ignoreChannelMessage)
+    bot.use(throttleCommands)
+    bot.use(parseArgs)
 
     // Set bot response
     bot.start((ctx) => Commands.start(ctx))
@@ -75,6 +67,12 @@ try {
     bot.command('setlb', (ctx) => {
         (async () => {
             await Commands.setlb(ctx)
+        })()
+    })
+
+    bot.command('botstatuslb', (ctx) => {
+        (async () => {
+            await Commands.botstatuslb(ctx)
         })()
     })
 

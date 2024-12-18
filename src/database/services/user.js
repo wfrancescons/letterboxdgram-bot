@@ -58,5 +58,14 @@ async function setLetterboxdUsername(telegram_id, letterboxd_username) {
     }
 }
 
-export { getLetterboxdUser, getUser, setLetterboxdUsername }
+async function countUsers() {
+    try {
+        const users_count = await User.count()
+        return users_count
+    } catch (error) {
+        throw error
+    }
+}
+
+export { countUsers, getLetterboxdUser, getUser, setLetterboxdUsername }
 

@@ -1,12 +1,12 @@
 import config from '../config.js'
 import { logCommand } from '../database/services/commandUsageLog.js'
 import { sendTextMessage } from '../utils/messageSender.js'
+import botstatuslb from './admin/botstatuslb.js'
 import gridlb from './gridlb.js'
 import inlineQuery from './inlineQuery.js'
 import lb from './lb.js'
 import profilelb from './profilelb.js'
 import setlb from './setlb.js'
-
 // Start command
 async function start(ctx) {
 
@@ -70,7 +70,6 @@ async function help(ctx) {
 }
 
 export {
-    gridlb, help, inlineQuery, lb, profilelb, setlb,
+    botstatuslb, gridlb, help, inlineQuery, lb, profilelb, setlb,
     start
 }
-
