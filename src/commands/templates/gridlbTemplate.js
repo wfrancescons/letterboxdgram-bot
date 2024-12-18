@@ -62,7 +62,7 @@ function generatePosterData(item, index, columns, param, config) {
         text: title,
         x: x + config.TEXT_PADDING,
         y: textY,
-        font: `${config.TITLE_FONT_SIZE}px "Noto Sans Bold", sans-serif`,
+        font: `${config.TITLE_FONT_SIZE}px "NotoSans-Bold", sans-serif`,
         fillStyle: '#ffffff',
         shadow: {
             color: 'rgba(0, 0, 0, 0.5)',
@@ -79,7 +79,7 @@ function generatePosterData(item, index, columns, param, config) {
             text: item.rating.text,
             x: x + config.TEXT_PADDING,
             y: y + config.POSTER_HEIGHT - config.TEXT_PADDING,
-            font: `${config.RATING_FONT_SIZE}px "Noto Sans Symbol", sans-serif`,
+            font: `${config.RATING_FONT_SIZE}px "NotoSans-Symble", sans-serif`,
             fillStyle: '#00c030',
             shadow: {
                 color: 'rgba(0, 0, 0, 0.5)',

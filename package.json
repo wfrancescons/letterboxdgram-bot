@@ -19,6 +19,8 @@
   "author": "Wesley Francescon <wfrancescons@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.65",
+    "bottleneck": "^2.19.5",
     "canvas": "^2.11.2",
     "cheerio": "^1.0.0-rc.12",
     "oracledb": "^6.5.0",
@@ -32,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/wfrancescons/letterboxdgram-bot/issues"
   },
-  "homepage": "https://github.com/wfrancescons/letterboxdgram-bot#readme"
+  "homepage": "https://github.com/wfrancescons/letterboxdgram-bot#readme",
+  "devDependencies": {
+    "sqlite3": "^5.1.7"
+  }
 }
