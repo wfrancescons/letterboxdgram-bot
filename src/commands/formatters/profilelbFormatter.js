@@ -10,8 +10,8 @@ function profilelb(data) {
 
     const text = [
         `👤 ${first_name.endsWith('s') ? first_name + '\'' : first_name + '\'s'} Letterboxd:`,
-        `\n\n📽️ Watched Films: ${watchedFilms.toLocaleString('pt-BR')}`,
-        `\n📅 This Year: ${watchedFilmsThisYear.toLocaleString('pt-BR')}`
+        `\n\n📽️ Watched Films: ${watchedFilms}`,
+        `\n📅 This Year: ${watchedFilmsThisYear}`
     ]
 
     if (lastFilms.length) {

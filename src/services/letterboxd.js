@@ -153,8 +153,8 @@ async function getLetterboxdUserStats(username) {
 
         const stats = DOM('div.profile-stats')
 
-        const watchedFilms = parseInt(stats.find('.profile-statistic:nth-child(1) .value').text())
-        const watchedFilmsThisYear = parseInt(stats.find('.profile-statistic:nth-child(2) .value').text())
+        const watchedFilms = stats.find('.profile-statistic:nth-child(1) .value').text().replace(',', '.')
+        const watchedFilmsThisYear = stats.find('.profile-statistic:nth-child(2) .value').text().replace(',', '.')
 
         const lastFilms = await getLastFilmsSeen(username, 3)
 
