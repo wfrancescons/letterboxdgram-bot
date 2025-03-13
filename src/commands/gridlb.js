@@ -113,13 +113,13 @@ async function gridlb(ctx) {
         await ctx.deleteMessage(response.message_id);
 
         // 10% de chance de enviar a mensagem adicional
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.3) {
             const lastfmMessage = 
                 "On Lastfm? 🔴🎵\n\n" +
                 "➡️ Try @telelastfmbot's collage grid!\n\n" +
                 "Share your scrobbles, create collages, and race your friends on the Weekly Charts! 🏆"
 
-            await sendTextMessage(ctx, lastfmMessage)
+            await sendTextMessage(ctx, lastfmMessage, {reply_to_message_id: ctx.message?.message_id})
         };
     } catch (error) {
         errorHandler(ctx, error);
