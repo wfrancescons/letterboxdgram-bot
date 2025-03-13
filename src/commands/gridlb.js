@@ -111,6 +111,16 @@ async function gridlb(ctx) {
 
         await sendPhotoMessage(ctx, { source: canva }, extra);
         await ctx.deleteMessage(response.message_id);
+
+        // 10% de chance de enviar a mensagem adicional
+        if (Math.random() < 0.1) {
+            const lastfmMessage = 
+                "On Lastfm? 🔴🎵\n\n" +
+                "➡️ Try @telelastfmbot's collage grid!\n\n" +
+                "Share your scrobbles, create collages, and race your friends on the Weekly Charts! 🏆"
+
+            await sendTextMessage(ctx, lastfmMessage)
+        };
     } catch (error) {
         errorHandler(ctx, error);
     }
