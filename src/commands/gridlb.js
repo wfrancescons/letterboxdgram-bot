@@ -112,15 +112,15 @@ async function gridlb(ctx) {
         await sendPhotoMessage(ctx, { source: canva }, extra);
         await ctx.deleteMessage(response.message_id);
 
-        // 30% de chance de enviar a mensagem adicional
-        if (Math.random() < 0.3) {
-            const postMessage =
-                "➡️ Try the collage generator online: https://boxdgrid.deno.dev";
+        // // 30% de chance de enviar a mensagem adicional
+        // if (Math.random() < 0.3) {
+        //     const postMessage =
+        //         "➡️ Try the collage generator online: https://boxdgrid.deno.dev";
 
-            await sendTextMessage(ctx, postMessage, {
-                reply_to_message_id: ctx.message?.message_id,
-            });
-        }
+        //     await sendTextMessage(ctx, postMessage, {
+        //         reply_to_message_id: ctx.message?.message_id,
+        //     });
+        // }
     } catch (error) {
         errorHandler(ctx, error);
     }

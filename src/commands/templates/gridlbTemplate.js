@@ -151,8 +151,42 @@ function generatePosterData(item, index, columns, param, config) {
     return posterElements;
 }
 
+function generateWatermark(
+    data,
+) {
+    const elements = [];
+
+    if (data.width > 230) {
+        elements.push(createImageElement({
+            src: "./src/commands/templates/assets/boxdgrid-logo.png",
+            x: 15,
+            y: data.height - 30 - 11,
+            width: 120,
+            height: 22,
+        }));
+    }
+
+    elements.push(createTextElement({
+        text: "boxdgrid.deno.dev",
+        x: data.width - 200,
+        y: data.height - 22,
+        font: `20px "NotoSans-Bold", sans-serif`,
+        fillStyle: "#dcdbdc",
+        shadow: {
+            color: "rgba(0, 0, 0, 0.5)",
+            offsetX: 2,
+            offsetY: 2,
+            blur: 4,
+        },
+        maxWidth: 200,
+        lineHeight: 20,
+    }));
+
+    return elements;
+}
+
 function gridlbTemplate({ lastFilms, columns, rows, param = null }) {
-    let config = {
+    const config = {
         POSTER_WIDTH: 230,
         POSTER_HEIGHT: 345,
         GRADIENT_HEIGHT: 200,
@@ -166,13 +200,18 @@ function gridlbTemplate({ lastFilms, columns, rows, param = null }) {
         RATING_FONT_SIZE: 23,
     };
 
+    const width = columns * config.POSTER_WIDTH;
+    const height = rows * config.POSTER_HEIGHT + 60;
+
     const data = {
         type: "grid",
-        width: columns * config.POSTER_WIDTH,
-        height: rows * config.POSTER_HEIGHT,
+        width,
+        height,
         background: "#0E0E0E",
         elements: [],
     };
+
+    const watermark = generateWatermark(data);
 
     lastFilms.forEach((film, i) => {
         const posterElements = generatePosterData(
@@ -184,6 +223,8 @@ function gridlbTemplate({ lastFilms, columns, rows, param = null }) {
         );
         data.elements.push(...posterElements);
     });
+
+    data.elements.push(...watermark);
 
     return data;
 }
