@@ -1,3 +1,5 @@
-/node_modules
 .env
-database.sqlite
+node_modules
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
