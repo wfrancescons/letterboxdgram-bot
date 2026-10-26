@@ -211,7 +211,7 @@ function generatePosterData(
 
   const posterElements: CanvasElement[] = [];
 
-  const posterUrl = item.film.image.large || item.film.poster;
+  const posterUrl = item.film.poster.large || item.film.poster.medium;
   if (posterUrl) {
     posterElements.push(
       createImageElement({

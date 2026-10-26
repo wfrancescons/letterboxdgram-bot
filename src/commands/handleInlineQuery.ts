@@ -50,7 +50,7 @@ export default async function handleInlineQuery(ctx: BotContext) {
           ? "Rewatched"
           : "Watched";
 
-        const thumbUrl = entry.film.image.small || entry.film.poster ||
+        const thumbUrl = entry.film.poster.small || entry.film.poster.large ||
           undefined;
 
         return {

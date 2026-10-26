@@ -11,18 +11,19 @@ export type FilmDate = {
   watched: number;
 };
 
-export type FilmImages = {
+export type FilmPoster = {
   tiny: string | null;
   small: string | null;
   medium: string | null;
   large: string | null;
 };
 
+export type FilmImages = FilmPoster;
+
 export type Film = {
   title: string;
-  year: number | null;
-  poster: string | null;
-  image: FilmImages;
+  year?: number;
+  poster: FilmPoster;
 };
 
 export type DiaryEntry = {
@@ -164,9 +165,12 @@ function parseNumber(value: string): number | null {
   return Number.isNaN(parsed) ? null : parsed;
 }
 
-function parseYear(value: string): number | null {
+function parseYear(value: string | null | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
   const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? null : parsed;
+  return Number.isNaN(parsed) ? undefined : parsed;
 }
 
 function parseDate(value: string): number {
@@ -177,7 +181,7 @@ function parseDate(value: string): number {
   return parsed;
 }
 
-function extractImagesFromDescription(description: string): FilmImages {
+function extractPosterFromDescription(description: string): FilmPoster {
   if (!description) {
     return { tiny: null, small: null, medium: null, large: null };
   }
@@ -254,7 +258,7 @@ function processItem({
   const pubDate = getText(findFirst(item, "pubDate"));
   const watchedDate = getText(findFirst(item, "letterboxd:watchedDate"));
   const yearText = getText(findFirst(item, "letterboxd:filmYear"));
-  const images = extractImagesFromDescription(descriptionHtml);
+  const poster = extractPosterFromDescription(descriptionHtml);
 
   return {
     date: {
@@ -264,8 +268,7 @@ function processItem({
     film: {
       title: getText(findFirst(item, "letterboxd:filmTitle")),
       year: parseYear(yearText),
-      poster: images.large,
-      image: images,
+      poster,
     },
     rating: getRating(item),
     review: extractReviewFromDescription(descriptionHtml),

@@ -75,7 +75,7 @@ export default function formatLb(
 
     link_preview_options: {
       prefer_large_media: true,
-      url: film.poster ?? undefined,
+      url: film.poster.large ?? undefined,
     },
 
     reply_markup: {
