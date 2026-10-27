@@ -3,6 +3,7 @@ import type { BotContext } from "@/types/context.ts";
 import { CommandGroup } from "@grammyjs/commands";
 
 import handleBotStatus from "@/commands/dev/handleBotStatus.ts";
+import handleUserInfo from "@/commands/dev/handleUserInfo.ts";
 import handleGridlb from "@/commands/handleGridlb.ts";
 import handleHelp from "@/commands/handleHelp.ts";
 import handleLb from "@/commands/handleLb.ts";
@@ -40,9 +41,9 @@ function registerForAdmins(
   description: string,
   handler: (ctx: BotContext) => Promise<void>,
 ) {
-  const cmd = devCommands.command(name, description);
+  const cmd = devCommands.command(name, description, handler);
   for (const chatId of adminChatIds) {
-    cmd.addToScope({ type: "chat", chat_id: chatId }, handler);
+    cmd.addToScope({ type: "chat", chat_id: chatId });
   }
 }
 
@@ -65,5 +66,10 @@ if (adminChatIds.length > 0) {
     "botstatuslb",
     "View bot server and usage statistics (Dev only)",
     handleBotStatus,
+  );
+  registerForAdmins(
+    "userinfolb",
+    "View user Telegram ID and Letterboxd account (Dev only)",
+    handleUserInfo,
   );
 }
