@@ -1,7 +1,7 @@
 import type { BotContext } from "@/types/context.ts";
 import { setLetterboxdUsername } from "@/database/services/users.ts";
 import { logCommand } from "@/database/services/commandLogs.ts";
-import { getLetterboxdUserXml as validateLetterboxdUser } from "@/services/letterboxd.ts";
+import { getLetterboxdUserXml as validateLetterboxdUser } from "@/services/letterboxd/index.ts";
 import errorHandler from "@/handlers/errorHandler.ts";
 import { FormattedString } from "@grammyjs/parse-mode";
 

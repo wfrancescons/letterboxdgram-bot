@@ -1,4 +1,4 @@
-import type { DiaryEntry } from "@/services/letterboxd.ts";
+import type { DiaryEntry } from "@/services/letterboxd/index.ts";
 import limitText from "@/utils/limitText.ts";
 
 import { FormattedString } from "@grammyjs/parse-mode";

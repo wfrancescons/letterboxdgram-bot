@@ -1,7 +1,7 @@
 import type { BotContext } from "@/types/context.ts";
 import { getLetterboxdUser } from "@/database/services/users.ts";
 import { logCommand } from "@/database/services/commandLogs.ts";
-import { getLastFilmsSeen } from "@/services/letterboxd.ts";
+import { getLastFilmsSeen } from "@/services/letterboxd/index.ts";
 import errorHandler from "@/handlers/errorHandler.ts";
 import formatLb from "./formatters/formatLb.ts";
 

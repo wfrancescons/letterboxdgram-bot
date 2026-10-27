@@ -8,7 +8,7 @@ import type {
   TextElement,
 } from "@/rendering/renderCanvas.ts";
 import { getTextLines, measureText } from "@/rendering/renderCanvas.ts";
-import type { DiaryEntry } from "@/services/letterboxd.ts";
+import type { DiaryEntry } from "@/services/letterboxd/index.ts";
 
 const WATERMARK_URL = "boxdgrid.com";
 

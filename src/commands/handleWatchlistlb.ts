@@ -1,7 +1,7 @@
 import type { BotContext } from "@/types/context.ts";
 import { getLetterboxdUser } from "@/database/services/users.ts";
 import { logCommand } from "@/database/services/commandLogs.ts";
-import { getWatchlist } from "@/services/letterboxd_url.ts";
+import { getWatchlist } from "@/services/letterboxd/index.ts";
 import errorHandler from "@/handlers/errorHandler.ts";
 import formatWatchlistLb from "./formatters/formatWatchlistLb.ts";
 

@@ -7,7 +7,7 @@ import {
   type DiaryEntry,
   getLastFilmsSeen,
   type TimeFilter,
-} from "@/services/letterboxd.ts";
+} from "@/services/letterboxd/index.ts";
 import type { BotContext } from "@/types/context.ts";
 import { FormattedString } from "@grammyjs/parse-mode";
 import { InputFile } from "grammy";

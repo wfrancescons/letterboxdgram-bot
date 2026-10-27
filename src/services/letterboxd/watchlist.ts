@@ -1,27 +1,15 @@
 import { DOMParser, Element } from "@b-fuze/deno-dom";
-
-type GetWatchlistParams = {
-  username: string;
-  limit?: number;
-};
-
-type Watchlist = {
-  count: number;
-  recentlyAdded: string[];
-  url: URL;
-};
+import { LETTERBOXD_BASE_URL, LETTERBOXD_HTTP_HEADERS } from "./client.ts";
+import type { GetWatchlistParams, Watchlist } from "./types.ts";
 
 export async function getWatchlist({
   username,
   limit = 10,
 }: GetWatchlistParams): Promise<Watchlist> {
-  const watchlistUrl = new URL(`https://letterboxd.com/${username}/watchlist/`);
+  const watchlistUrl = new URL(`${LETTERBOXD_BASE_URL}/${username}/watchlist/`);
   try {
     const response = await fetch(watchlistUrl, {
-      headers: {
-        "user-agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      },
+      headers: LETTERBOXD_HTTP_HEADERS,
     });
 
     if (!response.ok) {
@@ -29,7 +17,6 @@ export async function getWatchlist({
     }
 
     const html = await response.text();
-
     const document = new DOMParser().parseFromString(
       html,
       "text/html",

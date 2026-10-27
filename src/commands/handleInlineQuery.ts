@@ -2,7 +2,7 @@ import type { BotContext } from "@/types/context.ts";
 import type { InlineQueryResultArticle } from "grammy/types";
 import { getLetterboxdUser } from "@/database/services/users.ts";
 import { logCommand } from "@/database/services/commandLogs.ts";
-import { getLastFilmsSeen } from "@/services/letterboxd.ts";
+import { getLastFilmsSeen } from "@/services/letterboxd/index.ts";
 import errorHandler from "@/handlers/errorHandler.ts";
 import formatLb from "./formatters/formatLb.ts";
 
@@ -55,7 +55,9 @@ export default async function handleInlineQuery(ctx: BotContext) {
 
         return {
           type: "article",
-          id: `film-${index}-${entry.date.watched ?? entry.date.published ?? index}`,
+          id: `film-${index}-${
+            entry.date.watched ?? entry.date.published ?? index
+          }`,
           title: filmTitle,
           description,
           thumbnail_url: thumbUrl,
