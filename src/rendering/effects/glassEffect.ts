@@ -84,12 +84,12 @@ function sampleBilinear(
 
 /**
  * Renders a geometric shape (circle, pill, rectangle, or rounded-rect)
- * applying the glass effect shader (Figma style):
- * - Crystalline 3D optical refraction (convex lens + edge meniscus)
- * - Optional frost (0 by default for clear, haze-free glass)
- * - Chromatic Aberration (RGB dispersion along curved edges)
- * - Sharp, fine specular edge highlight (without fogging the interior)
- * - Illuminated directional outline (rim light)
+ * - Light (angle & intensity): illuminates both the primary light angle and the opposite
+ *   corner/angle while fading smoothly to 100% transparency on the perpendicular sides.
+ * - Refraction: 3D optical bending along the curved bevel and lens body.
+ * - Depth: controls the bevel curvature zone.
+ * - Dispersion: RGB chromatic aberration along curved edges.
+ * - Frost: background blur strength.
  */
 export function renderGlassEffectShape(
   ctx: CanvasRenderingContext2D,
@@ -107,11 +107,19 @@ export function renderGlassEffectShape(
     ? minHalf
     : clamp(geometry.borderRadius ?? 0, 0, minHalf);
 
-  // Configurable parameters (frost = 0 by default for pure crystalline glass)
+  // Core glass controls
   const refraction = options.refraction ?? 1.0;
   const depth = options.depth ?? 6;
+  const dispersion = options.dispersion ?? 0.05;
   const frost = options.frost ?? 0;
-  const chromaticAberration = options.chromaticAberration ?? 0.05;
+
+  // Light control (angle & intensity)
+  // Angle convention: 0° = Top, -45° = Top-Left (default), 45° = Top-Right
+  const lightAngleDeg = options.light?.angle ?? -45;
+  const lightAngleRad = ((lightAngleDeg - 90) * Math.PI) / 180;
+  const lightDirX = Math.cos(lightAngleRad);
+  const lightDirY = Math.sin(lightAngleRad);
+  const lightIntensity = clamp(options.light?.intensity ?? 0.6, 0, 2);
 
   // Drop shadow cast by the glass piece
   const shadowColor = parseColor(
@@ -125,20 +133,6 @@ export function renderGlassEffectShape(
   // Translucent tint (0 by default for maximum crystalline transparency)
   const tintColor = parseColor(options.tint?.color ?? "#ffffff", 1);
   const tintOpacity = clamp(options.tint?.opacity ?? 0, 0, 1);
-
-  // Glow / Specular Highlight
-  const glowColor = parseColor(options.glow?.color ?? "#ffffff", 1);
-  const glowIntensity = clamp(options.glow?.intensity ?? 0.35, 0, 2);
-
-  // Specular border (Figma-style directional Rim Light)
-  const borderAngleDeg = options.border?.angle ?? options.glow?.angle ?? 45;
-  const borderAngleRad = ((borderAngleDeg - 135) * Math.PI) / 180;
-  const lightDirX = Math.cos(borderAngleRad);
-  const lightDirY = Math.sin(borderAngleRad);
-
-  const borderThicknessRaw = options.border?.thickness ?? 1.5;
-  const borderOpacity = clamp(options.border?.opacity ?? 0.85, 0, 1);
-  const borderColor = parseColor(options.border?.color ?? "#ffffff", 1);
 
   // 1. Refraction / Edge Meniscus Zone (proportional to depth, keeping the lens center flat and readable)
   const effectiveDepth = Math.max(depth, 3.5);
@@ -195,12 +189,10 @@ export function renderGlassEffectShape(
     : srcPixels;
 
   // Calibrated chromatic dispersion in pixels (avoids exaggerated rainbow artifacts)
-  const caMaxPixels = chromaticAberration > 0
-    ? clamp(chromaticAberration * 26, 0, 2.8)
-    : 0;
+  const caMaxPixels = dispersion > 0 ? clamp(dispersion * 26, 0, 2.8) : 0;
 
-  // Sharp outer edge rim width (1px to 1.5px)
-  const rimSharpWidth = clamp(borderThicknessRaw * 0.42, 0.9, 1.5);
+  // Sharp outer edge rim width (~1.2px)
+  const rimSharpWidth = 1.25;
 
   // Effective inner bevel curvature radius (ensures smooth corners without 45° diagonal lines on rectangles)
   const roundness = clamp(cornerRadius / refractionZone, 0, 1);
@@ -297,7 +289,7 @@ export function renderGlassEffectShape(
       const shiftY = -refraction *
         (slopeY * maxMeniscusShift + nyRound * bodyMag);
 
-      // 4. Chromatic Aberration (RGB dispersion proportional to local lens slope)
+      // 4. Chromatic Dispersion (RGB dispersion proportional to local lens slope)
       const caOffsetX = caMaxPixels * slopeX;
       const caOffsetY = caMaxPixels * slopeY;
 
@@ -349,56 +341,77 @@ export function renderGlassEffectShape(
         glassB = glassB * (1 - tintOpacity) + tintColor.b * tintOpacity;
       }
 
-      // 7. Polished Glass Specular Reflection (without 45° diagonal corner seams)
-      const sx = clamp(1 - (halfW - Math.abs(dx)) / specularZone, 0, 1);
-      const sy = clamp(1 - (halfH - Math.abs(dy)) / specularZone, 0, 1);
-      const tSpecRound = clamp(1 - distInside / specularZone, 0, 1);
+      if (lightIntensity > 0) {
+        // Aspect-normalized angular direction from shape center + edge normal
+        // Ensures that on both circles and wide pills, the light projection hits
+        // the incident light corner AND the opposite corner, while fading to 0
+        // (100% transparent) at the perpendicular corners/sides.
+        const posNx = dx / halfW;
+        const posNy = dy / halfH;
+        const posLen = Math.hypot(posNx, posNy) || 1;
+        const posDirX = posNx / posLen;
+        const posDirY = posNy / posLen;
 
-      const specVecX = nxRound * Math.pow(tSpecRound, 2.2) * roundness +
-        signX * Math.pow(sx, 2.2) * (1 - roundness);
-      const specVecY = nyRound * Math.pow(tSpecRound, 2.2) * roundness +
-        signY * Math.pow(sy, 2.2) * (1 - roundness);
-      const specMag = Math.min(1, Math.hypot(specVecX, specVecY));
+        const rimNx = nxRound * roundness + signX * ux * (1 - roundness);
+        const rimNy = nyRound * roundness + signY * uy * (1 - roundness);
+        const rimLen = Math.hypot(rimNx, rimNy) || 1;
+        const normDirX = rimNx / rimLen;
+        const normDirY = rimNy / rimLen;
 
-      if (specMag > 0.001) {
-        const specDot = specVecX * lightDirX + specVecY * lightDirY;
-        const primarySpec = Math.max(0, specDot);
-        const bounceSpec = Math.max(0, -specDot);
+        const blendX = posDirX * 0.8 + normDirX * 0.2;
+        const blendY = posDirY * 0.8 + normDirY * 0.2;
+        const blendLen = Math.hypot(blendX, blendY) || 1;
+        const dirX = blendX / blendLen;
+        const dirY = blendY / blendLen;
 
-        const topHighlight = Math.pow(primarySpec, 1.6) * glowIntensity * 0.55;
-        const bottomCaustic = Math.pow(bounceSpec, 2.2) * glowIntensity * 0.28;
-        const subtleRim = Math.pow(specMag, 1.4) * glowIntensity * 0.14;
+        const lightDot = dirX * lightDirX + dirY * lightDirY;
+        const primaryLight = Math.max(0, lightDot);
+        const oppositeLight = Math.max(0, -lightDot);
 
-        const totalSpec = clamp(topHighlight + bottomCaustic + subtleRim, 0, 1);
-        glassR = glassR + (glowColor.r - glassR) * totalSpec;
-        glassG = glassG + (glowColor.g - glassG) * totalSpec;
-        glassB = glassB + (glowColor.b - glassB) * totalSpec;
-      }
+        // 7. Dual-Angle Specular Surface Highlight
+        const sx = clamp(1 - (halfW - Math.abs(dx)) / specularZone, 0, 1);
+        const sy = clamp(1 - (halfH - Math.abs(dy)) / specularZone, 0, 1);
+        const tSpecRound = clamp(1 - distInside / specularZone, 0, 1);
 
-      // 8. Fine Specular Edge Outline (Rim Light) Figma style
-      if (borderOpacity > 0 && borderThicknessRaw > 0) {
-        const outerEdgeRim = 1 - smoothstep(0, rimSharpWidth, distInside);
-        if (outerEdgeRim > 0.002) {
-          const rimNx = nxRound * roundness + signX * ux * (1 - roundness);
-          const rimNy = nyRound * roundness + signY * uy * (1 - roundness);
-          const rimLen = Math.hypot(rimNx, rimNy) || 1;
-          const rimDot = (rimNx / rimLen) * lightDirX +
-            (rimNy / rimLen) * lightDirY;
-          const primaryRim = Math.max(0, rimDot);
-          const bounceRim = Math.max(0, -rimDot);
+        const specVecX = nxRound * Math.pow(tSpecRound, 2.2) * roundness +
+          signX * Math.pow(sx, 2.2) * (1 - roundness);
+        const specVecY = nyRound * Math.pow(tSpecRound, 2.2) * roundness +
+          signY * Math.pow(sy, 2.2) * (1 - roundness);
+        const specMag = Math.min(1, Math.hypot(specVecX, specVecY));
 
-          const angularFactor = 0.25 +
-            0.75 * Math.pow(primaryRim, 1.4) +
-            0.45 * Math.pow(bounceRim, 2.0);
-
-          const rimAlpha = clamp(
-            outerEdgeRim * borderOpacity * angularFactor,
+        if (specMag > 0.001) {
+          const topHighlight = Math.pow(primaryLight, 2.0) * lightIntensity *
+            0.42;
+          const oppositeCaustic = Math.pow(oppositeLight, 2.4) *
+            lightIntensity * 0.24;
+          const totalSpec = clamp(
+            (topHighlight + oppositeCaustic) * specMag,
             0,
             1,
           );
-          glassR = glassR + (borderColor.r - glassR) * rimAlpha;
-          glassG = glassG + (borderColor.g - glassG) * rimAlpha;
-          glassB = glassB + (borderColor.b - glassB) * rimAlpha;
+
+          glassR = glassR + (255 - glassR) * totalSpec;
+          glassG = glassG + (255 - glassG) * totalSpec;
+          glassB = glassB + (255 - glassB) * totalSpec;
+        }
+
+        // 8. Dual-Corner Rim Border (incident angle + opposite angle, transparent on perpendicular sides)
+        const outerEdgeRim = 1 - smoothstep(0, rimSharpWidth, distInside);
+        if (outerEdgeRim > 0.002) {
+          const primaryRimFactor = Math.pow(primaryLight, 2.0);
+          const oppositeRimFactor = Math.pow(oppositeLight, 2.2) * 0.75;
+          const angularFactor = primaryRimFactor + oppositeRimFactor;
+
+          const rimAlpha = clamp(
+            outerEdgeRim * lightIntensity * angularFactor,
+            0,
+            1,
+          );
+          if (rimAlpha > 0.002) {
+            glassR = glassR + (255 - glassR) * rimAlpha;
+            glassG = glassG + (255 - glassG) * rimAlpha;
+            glassB = glassB + (255 - glassB) * rimAlpha;
+          }
         }
       }
 

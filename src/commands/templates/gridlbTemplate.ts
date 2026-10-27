@@ -1,4 +1,3 @@
-import { getTextLines, measureText } from "@/rendering/renderCanvas.ts";
 import type {
   CanvasElement,
   CanvasTemplateData,
@@ -8,6 +7,7 @@ import type {
   RectangleElement,
   TextElement,
 } from "@/rendering/renderCanvas.ts";
+import { getTextLines, measureText } from "@/rendering/renderCanvas.ts";
 import type { DiaryEntry } from "@/services/letterboxd.ts";
 
 const WATERMARK_URL = "boxdgrid.com";
@@ -31,21 +31,14 @@ export type TemplateConfig = {
 };
 
 const DEFAULT_GLASS_OPTIONS: GlassEffectOptions = {
-  refraction: 1.5,
-  depth: 2,
+  light: {
+    angle: -45,
+    intensity: 0.55,
+  },
+  refraction: 2.5,
+  depth: 5,
+  dispersion: 0.5,
   frost: 0,
-  chromaticAberration: 0.05,
-  glow: {
-    color: "#ffffff",
-    intensity: 0.5,
-    angle: 0,
-  },
-  border: {
-    angle: 0,
-    thickness: 2.0,
-    opacity: 0.25,
-    color: "#ffffff",
-  },
   tint: {
     color: "#000000",
     opacity: 0.15,
@@ -163,7 +156,7 @@ export function createGlassPillElement({
       type: "glass",
       options: {
         ...DEFAULT_GLASS_OPTIONS,
-        frost: 1,
+        frost: 2,
         ...options,
       },
     },

@@ -69,15 +69,11 @@ export type GlowStyle = {
   angle?: number;
 };
 
-export type GlassBorderOptions = {
-  /** Light incidence angle on the border in degrees (e.g., 45, 135) */
+export type GlassLightOptions = {
+  /** Light incidence angle in degrees (default: -45, top-left to bottom-right) */
   angle?: number;
-  /** Border / illuminated rim thickness (e.g., 1 to 15) */
-  thickness?: number;
-  /** Maximum outline opacity (0 to 1) */
-  opacity?: number;
-  /** Border reflection color (default: "#ffffff") */
-  color?: string;
+  /** Specular rim & surface light intensity (0 to 1, default: 0.8) */
+  intensity?: number;
 };
 
 export type GlassTintOptions = {
@@ -88,25 +84,23 @@ export type GlassTintOptions = {
 };
 
 export type GlassEffectOptions = {
+  /** Light control (angle and intensity for directional border & highlight) */
+  light?: GlassLightOptions;
   /** Optical refraction intensity (0 to 2, default: 0.8) */
   refraction?: number;
-  /** Lens depth / edge curvature (1 to 50, default: 6) */
+  /** Lens depth / edge bevel curvature (1 to 50, default: 6) */
   depth?: number;
-  /** Frosted glass blur intensity (0 to 50, default: 2) */
+  /** Chromatic dispersion / RGB color splitting at edges (0 to 1, default: 0.05) */
+  dispersion?: number;
+  /** Frosted glass blur intensity (0 to 50, default: 0) */
   frost?: number;
-  /** RGB channel dispersion / chromatic aberration at edges (0 to 1, default: 0.03) */
-  chromaticAberration?: number;
-  /** Specular inner glow / surface highlight */
-  glow?: GlowStyle;
-  /** Directional reflective border configuration */
-  border?: GlassBorderOptions;
   /** Translucent glass tint */
   tint?: GlassTintOptions;
   /** Drop shadow cast behind the glass */
   shadow?: ShadowStyle;
 };
 
-export type LiquidGlassOptions = GlassEffectOptions;
+export type GlassOptions = GlassEffectOptions;
 
 export type GlassElementStyle = {
   type: "glass";
