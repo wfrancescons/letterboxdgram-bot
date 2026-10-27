@@ -38,7 +38,7 @@ const DEFAULT_GLASS_OPTIONS: GlassEffectOptions = {
   refraction: 2.5,
   depth: 5,
   dispersion: 0.5,
-  frost: 0,
+  frost: 1,
   tint: {
     color: "#000000",
     opacity: 0.15,
@@ -156,7 +156,6 @@ export function createGlassPillElement({
       type: "glass",
       options: {
         ...DEFAULT_GLASS_OPTIONS,
-        frost: 2,
         ...options,
       },
     },
