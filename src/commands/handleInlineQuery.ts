@@ -55,7 +55,7 @@ export default async function handleInlineQuery(ctx: BotContext) {
 
         return {
           type: "article",
-          id: `film-${index}-${entry.date.watched}`,
+          id: `film-${index}-${entry.date.watched ?? entry.date.published ?? index}`,
           title: filmTitle,
           description,
           thumbnail_url: thumbUrl,

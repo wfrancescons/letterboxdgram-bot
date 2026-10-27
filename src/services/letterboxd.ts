@@ -8,7 +8,7 @@ export type Rating = {
 
 export type FilmDate = {
   published: number | null;
-  watched: number;
+  watched: number | null;
 };
 
 export type FilmPoster = {
@@ -173,12 +173,12 @@ function parseYear(value: string | null | undefined): number | undefined {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-function parseDate(value: string): number {
-  const parsed = Date.parse(value);
-  if (Number.isNaN(parsed)) {
-    throw new Error("INVALID_DATE");
+function parseDate(value: string | null | undefined): number | null {
+  if (!value) {
+    return null;
   }
-  return parsed;
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? null : parsed;
 }
 
 function extractPosterFromDescription(description: string): FilmPoster {

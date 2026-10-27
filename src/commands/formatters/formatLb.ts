@@ -25,12 +25,13 @@ export default function formatLb(
     link,
   }: FormatLbParams,
 ) {
-  const watchedDate = new Date(
-    date.watched,
-  ).toLocaleDateString(
-    "pt-BR",
-    DATE_FORMAT_OPTIONS,
-  );
+  const displayTimestamp = date.watched ?? date.published;
+  const watchedDate = displayTimestamp
+    ? new Date(displayTimestamp).toLocaleDateString(
+      "pt-BR",
+      DATE_FORMAT_OPTIONS,
+    )
+    : null;
 
   const filmTitle = `${film.title}${film.year ? ` (${film.year})` : ""}`;
 
@@ -40,7 +41,9 @@ export default function formatLb(
     .plain("📽️ ")
     .b(filmTitle);
 
-  const dateLine = new FormattedString(`\n📅 ${watchedDate}`);
+  const dateLine = watchedDate
+    ? new FormattedString(`\n📅 ${watchedDate}`)
+    : new FormattedString("");
 
   const ratingLine = rating.text
     ? new FormattedString(`\n📈 ${rating.text}`)

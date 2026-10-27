@@ -162,7 +162,7 @@ export default async function handleGridlb(ctx: BotContext) {
 
     const tip = new FormattedString(`Generating your ${finalGrid} grid...\n\n`)
       .italic(
-        "💡 Tip: customize your grid with sizes, time filters, or clean styles:\n",
+        "💡 Tip: customize your grid with sizes, time filters, or clean styles:\n\n",
       )
       .code("/gridlb 4x1")
       .plain("\n")
