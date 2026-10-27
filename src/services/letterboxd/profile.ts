@@ -1,11 +1,18 @@
 import { DOMParser } from "@b-fuze/deno-dom";
-import { LETTERBOXD_BASE_URL, LETTERBOXD_HTTP_HEADERS } from "./client.ts";
-import { getUserDiary } from "./rss.ts";
+import { parse } from "@std/xml";
+import {
+  LETTERBOXD_BASE_URL,
+  LETTERBOXD_FALLBACK_HEADERS,
+  LETTERBOXD_HTTP_HEADERS,
+} from "./client.ts";
+import { findChildren, findFirst, getText, getUserDiary } from "./rss.ts";
 import type {
+  DiaryEntry,
   LetterboxdProfile,
   ProfileFavourite,
   ProfileStat,
   UserStats,
+  XmlDocument,
 } from "./types.ts";
 
 export async function fetchFilmPoster(
@@ -46,26 +53,105 @@ export async function fetchFilmPoster(
   }
 }
 
+async function fetchProfilePage(
+  profileUrl: string,
+): Promise<{ ok: boolean; status: number; html: string | null }> {
+  try {
+    let res = await fetch(profileUrl, { headers: LETTERBOXD_HTTP_HEADERS });
+
+    if (res.status === 403) {
+      // Retry with fallback browser headers
+      res = await fetch(profileUrl, { headers: LETTERBOXD_FALLBACK_HEADERS });
+    }
+
+    if (res.status === 404) {
+      throw new Error("NOT_A_VALID_LETTERBOXD_USER");
+    }
+
+    if (!res.ok) {
+      return { ok: false, status: res.status, html: null };
+    }
+
+    const html = await res.text();
+    return { ok: true, status: res.status, html };
+  } catch (error) {
+    if (
+      error instanceof Error && error.message === "NOT_A_VALID_LETTERBOXD_USER"
+    ) {
+      throw error;
+    }
+    return { ok: false, status: 500, html: null };
+  }
+}
+
+function extractNameFromRss(xmlText: string): string | null {
+  try {
+    const parsed = parse(xmlText) as XmlDocument;
+    const channel = findFirst(parsed.root, "channel");
+    if (!channel) return null;
+
+    const titleNode = findFirst(channel, "title");
+    const rawTitle = getText(titleNode);
+    if (!rawTitle) return null;
+
+    const name = rawTitle.replace(/^Letterboxd\s*-\s*/i, "").trim();
+    return name || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getLetterboxdProfile(
   username: string,
 ): Promise<LetterboxdProfile> {
   const profileUrl = `${LETTERBOXD_BASE_URL}/${username}/`;
 
   // Fetch profile page and RSS in parallel
-  const [profileRes, recentActivity] = await Promise.all([
-    fetch(profileUrl, { headers: LETTERBOXD_HTTP_HEADERS }),
-    getUserDiary(username).catch(() => []),
+  const [profileResult, recentActivity] = await Promise.all([
+    fetchProfilePage(profileUrl),
+    getUserDiary(username).catch((err) => {
+      if (
+        err instanceof Error && err.message === "NOT_A_VALID_LETTERBOXD_USER"
+      ) {
+        throw err;
+      }
+      return [] as DiaryEntry[];
+    }),
   ]);
 
-  if (!profileRes.ok) {
-    if (profileRes.status === 404) {
-      throw new Error("NOT_A_VALID_LETTERBOXD_USER");
+  // If HTML could not be fetched (e.g. 403 on cloud server IP), gracefully fallback to RSS data
+  if (!profileResult.ok || !profileResult.html) {
+    console.warn(
+      `[Letterboxd] Could not fetch profile HTML for '${username}' (status ${profileResult.status}). Using RSS fallback.`,
+    );
+
+    let fallbackName = username;
+    try {
+      const xmlRes = await fetch(`${LETTERBOXD_BASE_URL}/${username}/rss/`, {
+        headers: LETTERBOXD_FALLBACK_HEADERS,
+      });
+      if (xmlRes.ok) {
+        const xmlText = await xmlRes.text();
+        const extracted = extractNameFromRss(xmlText);
+        if (extracted) fallbackName = extracted;
+      }
+    } catch {
+      // Use username if RSS name fails
     }
-    throw new Error(`Request failed with status: ${profileRes.status}`);
+
+    return {
+      name: fallbackName,
+      username,
+      avatar: null,
+      accountType: "free",
+      backdrop: undefined,
+      stats: [],
+      favourites: [],
+      recentActivity,
+    };
   }
 
-  const html = await profileRes.text();
-  const doc = new DOMParser().parseFromString(html, "text/html");
+  const doc = new DOMParser().parseFromString(profileResult.html, "text/html");
 
   if (!doc) {
     throw new Error("Failed to parse Letterboxd profile");
