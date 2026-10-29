@@ -38,7 +38,7 @@ const DEFAULT_GLASS_OPTIONS: GlassEffectOptions = {
   refraction: 2.5,
   depth: 5,
   dispersion: 0.5,
-  frost: 0,
+  frost: 1,
   tint: {
     color: "#000000",
     opacity: 0.15,
@@ -174,7 +174,7 @@ function createGradientRectangle(
       colors: [
         { stop: 0, color: "rgba(14, 14, 14, 0)" },
         { stop: 0.45, color: "rgba(14, 14, 14, 0.3)" },
-        { stop: 1, color: "rgba(14, 14, 14, 0.7)" },
+        { stop: 1, color: "rgba(14, 14, 14, 0.75)" },
       ],
       x0: x,
       y0: y + config.POSTER_HEIGHT - gradientHeight,
@@ -484,7 +484,7 @@ function generatePosterData(
 
   const titleBaselineY = hasBottomRow
     ? bottomRowCenterY - Math.max(glassRadius, config.RATING_PILL_HEIGHT / 2) -
-      8
+    8
     : y + config.POSTER_HEIGHT - 18;
 
   // Determine line count via rendering module to adjust elements above it
@@ -599,12 +599,12 @@ export function gridlbTemplate({
     ICON_SIZE: 15,
     GLASS_SIZE: 28,
     GLASS_GAP: 6,
-    ICON_MARGIN_RIGHT: 14,
+    ICON_MARGIN_RIGHT: 12,
     ICON_MARGIN_BOTTOM: 12,
-    TEXT_PADDING: 15,
-    TEXT_LINE_HEIGHT: 21,
-    TITLE_FONT_SIZE: 17,
-    YEAR_FONT_SIZE: 14,
+    TEXT_PADDING: 14,
+    TEXT_LINE_HEIGHT: 18,
+    TITLE_FONT_SIZE: 15,
+    YEAR_FONT_SIZE: 13,
     RATING_FONT_SIZE: 17,
     RATING_PILL_HEIGHT: 26,
     RATING_PILL_PADDING_X: 11,
