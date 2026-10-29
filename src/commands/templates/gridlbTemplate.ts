@@ -38,7 +38,7 @@ const DEFAULT_GLASS_OPTIONS: GlassEffectOptions = {
   refraction: 2.5,
   depth: 5,
   dispersion: 0.5,
-  frost: 1,
+  frost: 0,
   tint: {
     color: "#000000",
     opacity: 0.15,
