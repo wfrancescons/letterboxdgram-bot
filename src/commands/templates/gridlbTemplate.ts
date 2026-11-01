@@ -101,6 +101,7 @@ function createTextElement(params: {
   maxWidth?: number;
   maxLines?: number;
   lineHeight?: number;
+  vibrancy?: TextElement["vibrancy"];
 }): TextElement {
   return { type: "text", ...params };
 }
@@ -484,7 +485,7 @@ function generatePosterData(
 
   const titleBaselineY = hasBottomRow
     ? bottomRowCenterY - Math.max(glassRadius, config.RATING_PILL_HEIGHT / 2) -
-    8
+      8
     : y + config.POSTER_HEIGHT - 18;
 
   // Determine line count via rendering module to adjust elements above it
@@ -500,6 +501,7 @@ function generatePosterData(
       y: titleBaselineY,
       font: titleFont,
       fillStyle: "#ffffff",
+      vibrancy: "primary",
       shadow: {
         color: "rgba(0, 0, 0, 0.65)",
         offsetX: 2,

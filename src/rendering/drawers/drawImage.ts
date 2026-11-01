@@ -26,12 +26,38 @@ async function loadCachedImage(src: string): Promise<Image> {
   return await loadImage(src);
 }
 
+/**
+ * Loads all images of a template in parallel before the sequential drawing pass.
+ */
+export async function preloadImages(
+  srcs: string[],
+): Promise<Map<string, Image | Error>> {
+  const unique = [...new Set(srcs.filter(Boolean))];
+  const entries = await Promise.all(
+    unique.map(async (src): Promise<[string, Image | Error]> => {
+      try {
+        return [src, await loadCachedImage(src)];
+      } catch (error) {
+        return [src, error instanceof Error ? error : new Error(String(error))];
+      }
+    }),
+  );
+  return new Map(entries);
+}
+
 export async function drawImage(
   ctx: CanvasRenderingContext2D,
   element: ImageElement,
+  preloaded?: Map<string, Image | Error>,
 ): Promise<void> {
   try {
-    const image = await loadCachedImage(element.src);
+    let image: Image | null = null;
+    const fromMap = preloaded?.get(element.src);
+    if (fromMap && !(fromMap instanceof Error)) {
+      image = fromMap;
+    } else {
+      image = await loadCachedImage(element.src);
+    }
 
     await withContextEffects(ctx, element, (c) => {
       const radius = element.borderRadius ?? 0;
@@ -47,7 +73,7 @@ export async function drawImage(
         c.clip();
       }
 
-      c.drawImage(image, element.x, element.y, element.width, element.height);
+      c.drawImage(image!, element.x, element.y, element.width, element.height);
     });
   } catch (error) {
     console.error("Error on loadImage:", error, element.src);

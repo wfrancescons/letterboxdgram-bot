@@ -138,6 +138,8 @@ export type RectangleElement = {
   height: number;
   /** Corner border radius (0 for sharp rectangle) */
   borderRadius?: number;
+  /** Optional rotation in degrees around the center of the rectangle */
+  rotation?: number;
   fillStyle?: string | LinearGradientStyle | RadialGradientStyle;
   style?: GlassElementStyle;
   shadow?: ShadowStyle;
@@ -160,6 +162,8 @@ export type CircleElement = {
   effects?: ElementEffects;
 };
 
+export type TextVibrancyMode = "primary" | "secondary";
+
 export type TextElement = {
   type: "text";
   text: string;
@@ -172,6 +176,7 @@ export type TextElement = {
   lineHeight?: number;
   align?: CanvasTextAlign;
   maxLines?: number;
+  vibrancy?: TextVibrancyMode;
   effects?: ElementEffects;
 };
 
@@ -186,5 +191,6 @@ export type CanvasTemplateData = {
   width: number;
   height: number;
   background?: string;
+  format?: "png" | "jpeg" | "jpg";
   elements: CanvasElement[];
 };

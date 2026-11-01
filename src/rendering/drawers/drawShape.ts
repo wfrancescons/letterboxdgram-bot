@@ -67,6 +67,14 @@ export async function drawRect(
   }
 
   await withContextEffects(ctx, element, (c) => {
+    if (element.rotation) {
+      const cx = element.x + element.width / 2;
+      const cy = element.y + element.height / 2;
+      c.translate(cx, cy);
+      c.rotate((element.rotation * Math.PI) / 180);
+      c.translate(-cx, -cy);
+    }
+
     c.fillStyle = resolveFillStyle(c, element.fillStyle);
     const radius = element.borderRadius ?? 0;
 
