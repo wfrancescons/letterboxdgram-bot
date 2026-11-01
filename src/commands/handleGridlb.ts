@@ -21,7 +21,7 @@ const DEFAULT_GRID = "4x3";
 const DEFAULT_TIME: TimeFilter = "all";
 const GRID_REGEX = /^(\d+)x(\d+)$/;
 
-const TIME_ALIASES: Record<string, TimeFilter> = {
+export const TIME_ALIASES: Record<string, TimeFilter> = {
   "7d": "7d",
   "15d": "15d",
   "1w": "7d",
@@ -31,7 +31,7 @@ const TIME_ALIASES: Record<string, TimeFilter> = {
   "overall": "overall",
 };
 
-const CLEAN_PARAM_ALIASES = [
+export const CLEAN_PARAM_ALIASES = [
   "notexts",
   "notext",
   "clean",
@@ -39,13 +39,13 @@ const CLEAN_PARAM_ALIASES = [
   "onlyposters",
 ];
 
-const NO_TITLES_PARAM_ALIASES = [
+export const NO_TITLES_PARAM_ALIASES = [
   "notitles",
   "notitle",
   "minimal",
 ];
 
-function parseGridArgs(rawText: string) {
+export function parseGridArgs(rawText: string) {
   const parts = rawText.trim().toLowerCase().split(/\s+/).slice(1);
 
   const grid = parts.find((arg) => GRID_REGEX.test(arg)) || null;
@@ -63,7 +63,7 @@ function parseGridArgs(rawText: string) {
   return { grid, param, time };
 }
 
-function validateGrid(grid: string) {
+export function validateGrid(grid: string) {
   const match = grid.match(GRID_REGEX);
   if (!match) throw "COLLAGE_INCORRECT_ARGS";
 
@@ -82,7 +82,7 @@ function validateGrid(grid: string) {
   return { columns, rows };
 }
 
-function calculateGridFromCount(count: number) {
+export function calculateGridFromCount(count: number) {
   if (count <= 0) {
     return validateGrid(DEFAULT_GRID);
   }
