@@ -16,7 +16,7 @@ export default async function handleProfilelb(ctx: BotContext) {
   logCommand("profilelb", telegram_id, chat_id);
 
   try {
-    await ctx.replyWithChatAction("typing");
+    ctx.replyWithChatAction("typing").catch(() => {});
 
     const firstName = ctx.from?.first_name || ctx.from?.username || "User";
     const letterboxd_username = await getLetterboxdUser(telegram_id);

@@ -125,7 +125,7 @@ export default async function handleBotStatus(ctx: BotContext) {
   }
 
   try {
-    await ctx.replyWithChatAction("typing");
+    ctx.replyWithChatAction("typing").catch(() => {});
 
     const rawText = ctx.message?.text || "";
     const parts = rawText.trim().split(/\s+/).slice(1);

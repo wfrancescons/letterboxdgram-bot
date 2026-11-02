@@ -107,7 +107,7 @@ export default async function handleGridlb(ctx: BotContext) {
   logCommand("gridlb", telegram_id, chat_id);
 
   try {
-    await ctx.replyWithChatAction("typing");
+    ctx.replyWithChatAction("typing").catch(() => {});
 
     const letterboxd_username = await getLetterboxdUser(telegram_id);
     if (!letterboxd_username) {
@@ -181,7 +181,7 @@ export default async function handleGridlb(ctx: BotContext) {
         : undefined,
     });
 
-    await ctx.replyWithChatAction("upload_photo");
+    ctx.replyWithChatAction("upload_photo").catch(() => {});
 
     const templateData = {
       lastFilms,
