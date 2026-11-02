@@ -7,10 +7,14 @@ import type {
   RectangleElement,
   TextElement,
 } from "@/rendering/renderCanvas.ts";
-import { getTextLines, measureText } from "@/rendering/renderCanvas.ts";
+import {
+  createWatermarkElements,
+  getTextLines,
+  measureText,
+} from "@/rendering/renderCanvas.ts";
 import type { DiaryEntry } from "@/services/letterboxd/index.ts";
 
-const WATERMARK_URL = "boxdgrid.com";
+const FOOTER_HEIGHT = 44;
 
 export type TemplateConfig = {
   POSTER_WIDTH: number;
@@ -58,6 +62,8 @@ function createImageElement(params: {
   y: number;
   width: number;
   height: number;
+  filter?: string;
+  opacity?: number;
 }): ImageElement {
   return { type: "image", ...params };
 }
@@ -543,36 +549,78 @@ function generatePosterData(
   return posterElements;
 }
 
-function generateWatermark(width: number, height: number): CanvasElement[] {
+function generateFooterAmbientBackdrop(
+  lastFilms: DiaryEntry[],
+  columns: number,
+  rows: number,
+  width: number,
+  height: number,
+  config: TemplateConfig,
+): CanvasElement[] {
   const elements: CanvasElement[] = [];
+  const postersBottomY = height - FOOTER_HEIGHT;
 
-  if (width > 230) {
-    elements.push(
-      createImageElement({
-        src: "./src/commands/templates/assets/boxdgrid-logo.png",
-        x: 15,
-        y: height - 30 - 11,
-        width: 120,
-        height: 22,
-      }),
-    );
+  // Draw blurred ambient reflection of the bottom-most poster in each column
+  for (let col = 0; col < columns; col++) {
+    let bottomFilm: DiaryEntry | undefined;
+    for (let r = rows - 1; r >= 0; r--) {
+      const candidate = lastFilms[r * columns + col];
+      if (candidate) {
+        bottomFilm = candidate;
+        break;
+      }
+    }
+    if (!bottomFilm && lastFilms.length > 0) {
+      bottomFilm = lastFilms[lastFilms.length - 1];
+    }
+
+    const posterSrc = bottomFilm?.film?.poster?.large ||
+      bottomFilm?.film?.poster?.medium ||
+      bottomFilm?.film?.poster?.small ||
+      bottomFilm?.film?.poster?.tiny;
+
+    if (posterSrc) {
+      elements.push(
+        createImageElement({
+          src: posterSrc,
+          x: col * config.POSTER_WIDTH - 24,
+          y: postersBottomY - 30,
+          width: config.POSTER_WIDTH + 48,
+          height: FOOTER_HEIGHT + 60,
+          filter: "blur(32px) saturate(135%) brightness(0.38)",
+          opacity: 0.55,
+        }),
+      );
+    }
   }
 
+  // Darken and blend the footer bar so the ambient glow stays moody and legible
   elements.push(
-    createTextElement({
-      text: WATERMARK_URL,
-      x: width - 150,
-      y: height - 22,
-      font: `20px "NotoSans-Bold", sans-serif`,
-      fillStyle: "#dcdbdc",
-      shadow: {
-        color: "rgba(0, 0, 0, 0.5)",
-        offsetX: 2,
-        offsetY: 2,
-        blur: 4,
+    createRectangleElement({
+      x: 0,
+      y: postersBottomY,
+      width,
+      height: FOOTER_HEIGHT,
+      fillStyle: {
+        type: "linearGradient",
+        x0: 0,
+        y0: postersBottomY,
+        x1: 0,
+        y1: height,
+        colors: [
+          { stop: 0, color: "rgba(10, 10, 10, 0.88)" },
+          { stop: 0.45, color: "rgba(12, 12, 12, 0.70)" },
+          { stop: 1, color: "rgba(8, 8, 8, 0.84)" },
+        ],
       },
-      maxWidth: 150,
-      lineHeight: 20,
+    }),
+    // Mask any upward blur bleed in the poster grid area (especially if some slots are empty)
+    createRectangleElement({
+      x: 0,
+      y: 0,
+      width,
+      height: postersBottomY,
+      fillStyle: "#0E0E0E",
     }),
   );
 
@@ -613,7 +661,8 @@ export function gridlbTemplate({
   };
 
   const width = columns * config.POSTER_WIDTH;
-  const height = rows * config.POSTER_HEIGHT + 60;
+  const height = rows * config.POSTER_HEIGHT + FOOTER_HEIGHT;
+  const postersBottomY = height - FOOTER_HEIGHT;
 
   const data: CanvasTemplateData = {
     type: "grid",
@@ -623,8 +672,18 @@ export function gridlbTemplate({
     elements: [],
   };
 
-  const watermark = generateWatermark(width, height);
+  // 1. Ambient glow backdrop in the 60px footer
+  const ambientFooter = generateFooterAmbientBackdrop(
+    lastFilms,
+    columns,
+    rows,
+    width,
+    height,
+    config,
+  );
+  data.elements.push(...ambientFooter);
 
+  // 2. Poster cells
   lastFilms.forEach((film, i) => {
     const posterElements = generatePosterData(
       film,
@@ -637,6 +696,25 @@ export function gridlbTemplate({
     data.elements.push(...posterElements);
   });
 
+  // 3. Subtle separator line between posters and footer bar
+  data.elements.push(
+    createRectangleElement({
+      x: 0,
+      y: postersBottomY,
+      width,
+      height: 1,
+      fillStyle: "rgba(255, 255, 255, 0.05)",
+    }),
+  );
+
+  // 4. Watermark (logo + glass pill on multi-column, centered glass pill on 1-column)
+  const watermark = createWatermarkElements({
+    canvasWidth: width,
+    canvasHeight: height,
+    footerHeight: FOOTER_HEIGHT,
+    singleColumnThreshold: config.POSTER_WIDTH,
+    glassOptions,
+  });
   data.elements.push(...watermark);
 
   return data;

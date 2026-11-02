@@ -9,6 +9,7 @@ import type { CanvasTemplateData, ImageElement } from "./types.ts";
 export * from "./drawers/drawText.ts";
 export * from "./elements.ts";
 export * from "./types.ts";
+export * from "./watermark.ts";
 
 // Ensure fonts are registered before rendering
 ensureFontsRegistered();

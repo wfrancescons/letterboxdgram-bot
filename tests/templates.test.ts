@@ -47,9 +47,9 @@ describe("Grid Template Generation", () => {
     });
 
     assert.equal(template.type, "grid");
-    // Standard config: POSTER_WIDTH = 230, POSTER_HEIGHT = 345, bottom bar = 60
+    // Standard config: POSTER_WIDTH = 230, POSTER_HEIGHT = 345, bottom bar = 44
     assert.equal(template.width, 460);
-    assert.equal(template.height, 750);
+    assert.equal(template.height, 734);
     assert.equal(template.elements.length > 0, true);
 
     // Verify watermark element
@@ -99,15 +99,27 @@ describe("Grid Template Generation", () => {
     );
     assert.equal(textElements.length, 0);
 
-    // No glass pills or glass circles in clean mode
+    // Only the footer watermark glass pill should exist in clean mode (no poster rating pills or circle badges)
     const glassPills = template.elements.filter(
       (el) => el.type === "rectangle" && el.style?.type === "glass",
     );
-    assert.equal(glassPills.length, 0);
+    assert.equal(glassPills.length, 1);
 
-    // Images for posters are present + 1 watermark logo image
-    const images = template.elements.filter((el) => el.type === "image");
-    assert.equal(images.length, 3);
+    const glassCircles = template.elements.filter(
+      (el) => el.type === "circle" && el.style?.type === "glass",
+    );
+    assert.equal(glassCircles.length, 0);
+
+    // 2 crisp poster images + 1 watermark logo image (+ 2 blurred ambient glow images)
+    const crispImages = template.elements.filter(
+      (el) => el.type === "image" && !el.filter,
+    );
+    assert.equal(crispImages.length, 3);
+
+    const ambientImages = template.elements.filter(
+      (el) => el.type === "image" && Boolean(el.filter),
+    );
+    assert.equal(ambientImages.length, 2);
   });
 
   it("should omit titles and release years when param is 'notitles' (minimal mode)", () => {
@@ -154,8 +166,8 @@ describe("Grid Template Generation", () => {
       param: null,
     });
 
-    // With 5 columns and 5 rows: width = 5 * 230 = 1150, height = 5 * 345 + 60 = 1785
+    // With 5 columns and 5 rows: width = 5 * 230 = 1150, height = 5 * 345 + 44 = 1769
     assert.equal(template.width, 1150);
-    assert.equal(template.height, 1785);
+    assert.equal(template.height, 1769);
   });
 });
